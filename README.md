@@ -2,11 +2,12 @@
 
 ## Overview
 
-This repository contains a simple UI template for a DAML application. It provides ledger connectivity and shows how to create simple reports from contracts.
+This repository contains a simple UI template for a DAML application. It provides ledger connectivity and shows how to create simple reports from contracts. The template is based on [create-react-app](https://github.com/facebook/create-react-app) and the [Material UI](https://material-ui.com/) framework.
 
 ## Prerequisites
 
 * [Yarn](https://yarnpkg.com/lang/en/docs/install/)
+* [DAML SDK](https://docs.daml.com/getting-started/installation.html)
 
 ## Quick Start
 
