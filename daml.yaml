@@ -1,7 +1,6 @@
-sdk-version: 0.13.34
-name: test
+sdk-version: 0.13.54
+name: daml-ui-template
 source: daml
-scenario: Main:setup
 parties:
   - Alice
   - Bob
@@ -9,3 +8,4 @@ version: 0.0.1
 dependencies:
   - daml-prim
   - daml-stdlib
+  - daml-script

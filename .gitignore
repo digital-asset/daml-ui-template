@@ -1,2 +1,4 @@
 node_modules/
 /.daml
+daml-ts/src
+daml-ts/lib

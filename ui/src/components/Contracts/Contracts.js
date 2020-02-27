@@ -7,7 +7,7 @@ export default function Contracts({ contracts, columns, actions=[] }) {
 
   actions = actions ? actions : [];
   const isDefault = !columns;
-  columns = columns ? columns : [ [ "Module", "templateId.moduleName" ], [ "Template", "templateId.entityName" ], [ "ContractId", "contractId" ] ];
+  columns = columns ? columns : [ [ "TemplateId", "templateId" ], [ "ContractId", "contractId" ] ];
 
   const classes = useStyles();
   var [state, setState] = useState({});
@@ -33,7 +33,7 @@ export default function Contracts({ contracts, columns, actions=[] }) {
           <TableHead>
             <TableRow className={classes.tableRow}>
               { columns.map(col =>    (<TableCell className={classes.tableCell} key={col[0]}>{col[0]}</TableCell>)) }
-              { isDefault ?           (<TableCell className={classes.tableCell} key="argument">Argument</TableCell>) : <></>}
+              { isDefault ?           (<TableCell className={classes.tableCell} key="payload">Payload</TableCell>) : <></>}
               { actions.map(action => (<TableCell className={classes.tableCell} key={action[0]}>{action[0]}</TableCell>)) }
             </TableRow>
           </TableHead>
@@ -42,8 +42,8 @@ export default function Contracts({ contracts, columns, actions=[] }) {
               <TableRow key={i} className={classes.tableRow}>
                 { columns.map(col => (<TableCell key={col[0]} className={classes.tableCell}>{getValue(c, col[1])}</TableCell>)) }
                 { isDefault
-                    ? (<TableCell key="argument" className={classes.tableCell}>
-                        <ReactJson src={c.argument} name={false} collapsed={true} enableClipboard={false}/>
+                    ? (<TableCell key="payload" className={classes.tableCell}>
+                        <ReactJson src={c.payload} name={false} collapsed={true} enableClipboard={false}/>
                       </TableCell>)
                     : <></> }
                 { actions.map(action => (
