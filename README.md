@@ -11,26 +11,39 @@ This repository contains a simple UI template for a DAML application. It provide
 
 ## Quick Start
 
-Install the Javascript dependencies:
-```sh
-yarn install
-```
+Build the DAML project:
 
-Start up the sandbox ledger:
-```sh
-daml start --sandbox-option '--ledgerid=test' --start-navigator 'no'
-```
+    daml build
+    
+Start the sandbox ledger:
+
+    daml start --sandbox-option '--ledgerid=daml-ui-tempalte' --sandbox-option '-w' --start-navigator 'no'
+
+Run the initialization script:
+
+    daml script --dar .daml/dist/daml-ui-template-0.0.1.dar --script-name Main:setup --ledger-host localhost --ledger-port 6865 --wall-clock-time
+
+Generate the Typescript code:
+
+    daml codegen ts .daml/dist/daml-ui-template-0.0.1.dar -o daml-ts/src
+
+Install the Javascript dependencies:
+    
+    yarn workspaces run install
+
+Build the UI code:
+
+    yarn workspaces run build
 
 Start up the development server:
-```sh
-yarn start
-```
+
+    cd ui && yarn start
 
 This opens a browser page pointing to `http://localhost:3000/#/login`. Note that the development server serves content via http and should not be exposed as is to a public-facing network.
 
 Login as `Alice` (case sensitive), leaving the password blank.
 
-You are now redirected to `http://localhost:3000/#/app/default` where you see the contract listed with an explorable JSON tree in the `Argument` column. This the default view implemented in [src/pages/default/Default.js](src/pages/Default.js), which uses the `Contracts` React component's defaults. It is useful to explore a contracts data to determine which fields to display.
+You are now redirected to `http://localhost:3000/#/app/report` where you see the contract listed with an explorable JSON tree in the `Argument` column. This the default view implemented in [src/pages/default/Default.js](src/pages/Default.js), which uses the `Contracts` React component's defaults. It is useful to explore a contracts data to determine which fields to display.
 
 In the report tab you can see a ledger view with specific fields displayed for the contract, a textfield and button to exercise a choice. It is implemented in [src/pages/report/Report.js](src/pages/report/Report.js), where you can see how custom columns and actions can be passed to the `Contracts` component.
 

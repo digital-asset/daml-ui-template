@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { withRouter } from "react-router-dom";
-import { AppBar, Toolbar, IconButton, CircularProgress, Typography } from "@material-ui/core";
+import { AppBar, Toolbar, IconButton, Typography } from "@material-ui/core";
 import { Menu, ExitToApp, ArrowBack, Refresh } from "@material-ui/icons";
 import classNames from "classnames";
 import useStyles from "./styles";
 import { useLayoutState, useLayoutDispatch, toggleSidebar } from "../../context/LayoutContext";
 import { useUserDispatch, signOut, useUserState } from "../../context/UserContext";
-import { useLedgerDispatch, fetchContracts } from "../../context/LedgerContext";
+import { useReload } from "@daml/react";
 
 function Header({ history }) {
   const classes = useStyles();
@@ -16,11 +16,8 @@ function Header({ history }) {
   const layoutDispatch = useLayoutDispatch();
   const userState = useUserState();
   const userDispatch = useUserDispatch();
-  const ledgerDispatch = useLedgerDispatch();
-
-  // local
-  const [isFetching, setIsFetching] = useState(false);
-
+  const reload = useReload();
+  
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar className={classes.toolbar}>
@@ -57,14 +54,10 @@ function Header({ history }) {
         <IconButton
           color="inherit"
           aria-haspopup="true"
-          onClick={() => {
-            fetchContracts(ledgerDispatch, userState.token, setIsFetching, () => {});
-          }}
+          onClick={reload}
           className={classes.headerMenuButton}
         >
-          {isFetching
-            ? (<CircularProgress className={classes.progress} size={28} color="secondary" />)
-            : <Refresh classes={{ root: classes.headerIcon }} />}
+          <Refresh classes={{ root: classes.headerIcon }} />
         </IconButton>
         <IconButton
           aria-haspopup="true"

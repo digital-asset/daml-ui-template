@@ -4,6 +4,9 @@
 daml 1.2
 module Main where
 
+import Daml.Script
+import Prelude hiding (submit)
+
 type AssetId = ContractId Asset
 
 template Asset
@@ -22,13 +25,16 @@ template Asset
           create this with
             owner = newOwner
 
-setup = scenario do
-  alice <- getParty "Alice"
-  bob <- getParty "Bob"
+setup : Script ()
+setup = do
+  alice <- allocatePartyWithHint "Alice" $ PartyIdHint with partyIdHint = "Alice"
+  bob <- allocatePartyWithHint "Bob" $ PartyIdHint with partyIdHint = "Bob"
 
-  submit alice do create Asset with issuer = alice; owner = alice; name = "TV"
-  submit alice do create Asset with issuer = alice; owner = alice; name = "Car"
-  submit alice do create Asset with issuer = alice; owner = alice; name = "Boat"
+  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "TV"
+  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Car"
+  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Boat"
 
-  submit bob do create Asset with issuer = bob; owner = bob; name = "Bike"
-  submit bob do create Asset with issuer = bob; owner = bob; name = "House"
+  submit bob do createCmd Asset with issuer = bob; owner = bob; name = "Bike"
+  submit bob do createCmd Asset with issuer = bob; owner = bob; name = "House"
+
+  pure ()

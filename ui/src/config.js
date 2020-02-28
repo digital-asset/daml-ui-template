@@ -2,9 +2,9 @@ import uuidv4 from "uuid/v4";
 import * as jwt from "jsonwebtoken";
 
 const isLocalDev = true;
-const ledgerId = "test"
+const ledgerId = "daml-ui-tempalte"
 const applicationId = uuidv4();
-const createToken = party => jwt.sign({ ledgerId, applicationId, party }, "secret")
+const createToken = party => jwt.sign({ "https://daml.com/ledger-api": { ledgerId, applicationId, admin: true, actAs: [party], readAs: [party] } }, "secret")
 const parties = [ "Alice", "Bob" ];
 
 // Dev config
