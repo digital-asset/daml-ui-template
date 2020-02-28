@@ -3,3 +3,4 @@ node_modules/
 daml-ts/src
 daml-ts/lib
 *.log
+build/
