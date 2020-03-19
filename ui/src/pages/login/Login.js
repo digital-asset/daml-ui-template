@@ -3,7 +3,8 @@ import { Grid, CircularProgress, Typography, Button, TextField, Fade } from "@ma
 import { withRouter } from "react-router-dom";
 import useStyles from "./styles";
 import logo from "./logo.svg";
-import { useUserDispatch, loginUser } from "../../context/UserContext";
+import { useUserDispatch, loginUser, loginDablUser } from "../../context/UserContext";
+import { isLocalDev } from "../../config";
 
 function Login(props) {
   var classes = useStyles();
@@ -31,6 +32,15 @@ function Login(props) {
                   Something is wrong with your login or password :(
                 </Typography>
               </Fade>
+              {!isLocalDev &&
+                <>
+                  <Button className={classes.dablLoginButton} variant="contained" color="primary" size="large" onClick={loginDablUser}>
+                    Log in with DABL
+                  </Button>
+                  <Typography>
+                    OR
+                  </Typography>
+                </>}
               <TextField
                 id="email"
                 InputProps={{
@@ -86,10 +96,9 @@ function Login(props) {
                 fullWidth
               />
               <div className={classes.formButtons}>
-                {isLoading ? (
+                {isLoading ?
                   <CircularProgress size={26} className={classes.loginLoader} />
-                ) : (
-                  <Button
+                : <Button
                     disabled={loginValue.length === 0}
                     onClick={() =>
                       loginUser(
@@ -106,8 +115,7 @@ function Login(props) {
                     size="large"
                   >
                     Login
-                  </Button>
-                )}
+                  </Button>}
               </div>
             </React.Fragment>
         </div>

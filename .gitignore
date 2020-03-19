@@ -4,3 +4,4 @@ daml-ts/src
 daml-ts/lib
 *.log
 build/
+.DS_Store

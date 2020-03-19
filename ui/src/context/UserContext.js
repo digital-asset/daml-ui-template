@@ -1,5 +1,5 @@
 import React from "react";
-import config from "../config";
+import { createToken, dablLoginUrl } from "../config";
 
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
@@ -7,7 +7,7 @@ var UserDispatchContext = React.createContext();
 function userReducer(state, action) {
   switch (action.type) {
     case "LOGIN_SUCCESS":
-      return { ...state, isAuthenticated: true, token: action.token, user: action.user, party: action.party };
+      return { ...state, isAuthenticated: true, token: action.token, party: action.party };
     case "LOGIN_FAILURE":
       return { ...state, isAuthenticated: false };
     case "SIGN_OUT_SUCCESS":
@@ -19,13 +19,12 @@ function userReducer(state, action) {
 }
 
 function UserProvider({ children }) {
-  const token = localStorage.getItem("daml.token")
-  const user = localStorage.getItem("daml.user")
   const party = localStorage.getItem("daml.party")
+  const token = localStorage.getItem("daml.token")
+
   var [state, dispatch] = React.useReducer(userReducer, {
     isAuthenticated: !!token,
     token,
-    user,
     party
   });
 
@@ -54,21 +53,19 @@ function useUserDispatch() {
   return context;
 }
 
-export { UserProvider, useUserState, useUserDispatch, loginUser, signOut };
 
 // ###########################################################
 
-function loginUser(dispatch, user, password, history, setIsLoading, setError) {
+function loginUser(dispatch, party, userToken, history, setIsLoading, setError) {
   setError(false);
   setIsLoading(true);
 
-  if (!!user && !!config.tokens[user.toString()]) {
-    const token = config.tokens[user.toString()];
-    const party = config.parties[user.toString()];  // required for DABL
-    localStorage.setItem("daml.token", token);
-    localStorage.setItem("daml.user", user);
+  if (!!party) {
+    const token = userToken || createToken(party)
     localStorage.setItem("daml.party", party);
-    dispatch({ type: "LOGIN_SUCCESS", token, user, party });
+    localStorage.setItem("daml.token", token);
+
+    dispatch({ type: "LOGIN_SUCCESS", token, party });
     setError(null);
     setIsLoading(false);
     history.push("/app");
@@ -79,10 +76,17 @@ function loginUser(dispatch, user, password, history, setIsLoading, setError) {
   }
 }
 
-function signOut(dispatch, history) {
-  localStorage.removeItem("daml.token");
-  localStorage.removeItem("daml.user");
+const loginDablUser = () => {
+  window.location.assign(`https://${dablLoginUrl}`);
+}
+
+function signOut(event, dispatch, history) {
+  event.preventDefault();
   localStorage.removeItem("daml.party");
+  localStorage.removeItem("daml.token");
+
   dispatch({ type: "SIGN_OUT_SUCCESS" });
   history.push("/login");
 }
+
+export { UserProvider, useUserState, useUserDispatch, loginUser, loginDablUser, signOut };
