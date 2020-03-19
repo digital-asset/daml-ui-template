@@ -17,37 +17,11 @@ export const httpBaseUrl = isLocalDev ? undefined : ('https://' + apiUrl.join('.
 // directly in development mode.
 export const wsBaseUrl = isLocalDev ? 'ws://localhost:7575/' : undefined;
 
-
-// const ledgerId = "daml-ui-tempalte"
 const applicationId = uuidv4();
+
 export const createToken = party => jwt.sign({ "https://daml.com/ledger-api": { ledgerId, applicationId, admin: true, actAs: [party], readAs: [party] } }, "secret")
 
 let loginUrl = host.slice(1)
 loginUrl.unshift('login')
 
 export const dablLoginUrl = loginUrl.join('.') + (window.location.port ? ':' + window.location.port : '') + '/auth/login?ledgerId=' + ledgerId;
-// const parties = [ "Alice", "Bob" ];
-
-// // Dev config
-// const localConfig = {
-//   isLocalDev,
-//   tokens: {},
-//   parties: {},
-//   ledgerId
-// }
-// parties.map(p => localConfig.tokens[p.toString()] = createToken(p));
-
-// // DABL config
-// const dablConfig = {
-//   isLocalDev,
-//   tokens: {
-//     Alice: "" // Copy token for Alice from DABL website
-//   },
-//   parties: {
-//     Alice: ""  // Copy Party ID from DABL website
-//   },
-//   ledgerId
-// }
-
-// const config = isLocalDev ? localConfig : dablConfig
-// export default config;

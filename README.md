@@ -51,15 +51,27 @@ You can now transfer asset from Alice to Bob by entering `Bob` as the new owner 
 
 By modifying this template you can now create a custom UI for your DAML application.
 
-## Running against DABL
+## Deploying to DABL
 
-First, deploy your DAML model to DABL and create the `Alice` and `Bob` parties. Then, make the folloing changes in [src/config.js](src/config.js):
+Deploying `daml-ui-template` to the hosted DAML platform project:DABL is quite simple. Log into your DABL account, create a new ledger and upload your DAML models and your UI.
 
-1. Switch the `isLocalDev` flag to `false`
-2. Set the `ledgerId` to the one found on the *Ledger Settings* page in DABL
-3. Copy the JWT tokens for each party from the *Ledger Settings* page in DABL into the `tokens` field on the `dablConfig` object
-4. Lookup the obfuscated party names for each party in the *Live Data* page in DABL on the `LedgerParty` contracts and copy them into the `parties` field on the `dablConfig` object
+To upload the DAML models, compile them into a DAR by executing
 
-Finally, you need to change the `proxy` config entry in [package.json](package.json) to point to the DABL API endpoint, which can also be copied from the *Ledger Settings* page in DABL.
+```bash
+daml build -o daml-ui-template.dar
+```
 
-Now you can run `yarn start` and interact with the application as described above. Note that when exercising the `Give` choice you now need to paste in the obfuscated DABL party name.
+at the root of your repository. Afterwards, open to the DABL website, select the ledger you want to deploy to, go to the "DAML" selection and upload the DAR `daml-ui-template.dar` you have just created.
+
+To upload the UI, create a ZIP file containing all your UI assets by executing
+
+```bash
+daml build
+daml codegen ts .daml/dist/daml-ui-template-0.0.1.dar -o daml-ts/src
+yarn workspaces run build
+(cd ui && zip -r ../daml-ui-template.zip build)
+```
+
+at the root of the repository. Afterwards, select the "UI Assets" tab of your chosen ledger on the DABL website, upload the ZIP file `daml-ui-template.zip` you have just created and publish it.
+
+To see your deployed instance of create-daml-app in action, follow the "Visit site" link at the top right corner of your "UI Assets" page.

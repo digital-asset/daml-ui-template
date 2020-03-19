@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Grid, CircularProgress, Typography, Button, TextField, Fade } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import useStyles from "./styles";
@@ -18,23 +18,6 @@ function Login(props) {
   var [loginValue, setLoginValue] = useState("");
   var [passwordValue, setPasswordValue] = useState("");
 
-  useEffect(() => {
-    const url = new URL(window.location.toString());
-    const token = url.searchParams.get('token');
-    if (token === null) {
-      return;
-    }
-    const party = url.searchParams.get('party');
-    if (party === null) {
-      throw Error("When 'token' is passed via URL, 'party' must be passed too.");
-    }
-    localStorage.setItem("daml.party", party);
-    localStorage.setItem("daml.token", token);
-    console.log(`Set party to ${party} and token to ${token}`)
-    // dispatch({ type: "LOGIN_SUCCESS", token, user, party });
-    userDispatch({ type: "LOGIN_SUCCESS", token, party });
-  })
-
   return (
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
@@ -51,12 +34,12 @@ function Login(props) {
               </Fade>
               {!isLocalDev &&
                 <>
-                <Button variant="contained" color="primary" size="large" onClick={loginDablUser}>
-                  Log in with DABL
-                </Button>
-                <Typography>
-                  OR
-                </Typography>
+                  <Button className={classes.dablLoginButton} variant="contained" color="primary" size="large" onClick={loginDablUser}>
+                    Log in with DABL
+                  </Button>
+                  <Typography>
+                    OR
+                  </Typography>
                 </>}
               <TextField
                 id="email"

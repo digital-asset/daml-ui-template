@@ -106,6 +106,9 @@ export default makeStyles(theme => ({
     height: 1,
     backgroundColor: theme.palette.text.hint + "40",
   },
+  dablLoginButton: {
+    marginBottom: theme.spacing(2)
+  },
   errorMessage: {
     textAlign: "center",
   },
