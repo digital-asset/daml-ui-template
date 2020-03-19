@@ -17,7 +17,7 @@ function Header({ history }) {
   const userState = useUserState();
   const userDispatch = useUserDispatch();
   const reload = useReload();
-  
+
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar className={classes.toolbar}>
@@ -50,7 +50,7 @@ function Header({ history }) {
           DAML App Template
         </Typography>
         <div className={classes.grow} />
-        <Typography variant="h6" weight="medium">User: {userState.user}</Typography>
+        <Typography variant="h6" weight="medium">User: {userState.party}</Typography>
         <IconButton
           color="inherit"
           aria-haspopup="true"
@@ -64,7 +64,7 @@ function Header({ history }) {
           color="inherit"
           className={classes.headerMenuButton}
           aria-controls="profile-menu"
-          onClick={() => signOut(userDispatch, history)}
+          onClick={(event) => signOut(event, userDispatch, history)}
         >
           <ExitToApp classes={{ root: classes.headerIcon }} />
         </IconButton>

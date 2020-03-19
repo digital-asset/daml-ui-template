@@ -9,15 +9,15 @@ import Report from "../../pages/report/Report";
 import DamlLedger from "@daml/react";
 import { useUserState } from "../../context/UserContext";
 import Default from "../../pages/default/Default";
+import {wsBaseUrl, httpBaseUrl} from "../../config";
 
 function Layout() {
   const classes = useStyles();
   const user = useUserState();
   const layoutState = useLayoutState();
-  const wsBaseUrl = "ws://localhost:7575/";
-  
+
   return (
-    <DamlLedger party={user.party} token={user.token} wsBaseUrl={wsBaseUrl}>
+    <DamlLedger party={user.party} token={user.token} httpBaseUrl={httpBaseUrl} wsBaseUrl={wsBaseUrl}>
       <div className={classes.root}>
           <>
             <Header />

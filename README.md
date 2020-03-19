@@ -14,10 +14,10 @@ This repository contains a simple UI template for a DAML application. It provide
 Build the DAML project:
 
     daml build
-    
+
 Start the sandbox ledger:
 
-    daml start --sandbox-option '--ledgerid=daml-ui-tempalte' --sandbox-option '-w' --start-navigator 'no'
+    daml start --sandbox-option '--ledgerid=daml-ui-template' --sandbox-option '-w' --start-navigator 'no'
 
 Run the initialization script:
 
@@ -28,7 +28,7 @@ Generate the Typescript code:
     daml codegen ts .daml/dist/daml-ui-template-0.0.1.dar -o daml-ts/src
 
 Install the Javascript dependencies:
-    
+
     yarn workspaces run install
 
 Build the UI code:
