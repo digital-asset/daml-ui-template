@@ -86,7 +86,6 @@ function signOut(event, dispatch, history) {
   localStorage.removeItem("daml.token");
 
   dispatch({ type: "SIGN_OUT_SUCCESS" });
-  // window.location.assign(`${window.location.origin}/#/login`)
   history.push("/login");
 }
 
