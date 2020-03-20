@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "workspaces": [
-    "daml-ts",
-    "ui"
-  ]
+    "private": true,
+    "workspaces": [
+        "ui"
+    ]
 }

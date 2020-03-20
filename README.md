@@ -67,7 +67,7 @@ To upload the UI, create a ZIP file containing all your UI assets by executing
 
 ```bash
 daml build
-daml codegen ts .daml/dist/daml-ui-template-0.0.1.dar -o daml-ts/src
+daml codegen ts .daml/dist/daml-ui-template-0.0.1.dar -o daml2ts -p package.json
 yarn workspaces run build
 (cd ui && zip -r ../daml-ui-template.zip build)
 ```
