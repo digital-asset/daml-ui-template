@@ -1,7 +1,6 @@
 node_modules/
 /.daml
-daml-ts/src
-daml-ts/lib
+daml2ts/*
 *.log
 build/
 .DS_Store
