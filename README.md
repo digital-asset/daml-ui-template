@@ -17,19 +17,15 @@ Build the DAML project:
 
 Start the sandbox ledger:
 
-    daml start --sandbox-option '--ledgerid=daml-ui-template' --sandbox-option '-w' --start-navigator 'no'
-
-Run the initialization script:
-
-    daml script --dar .daml/dist/daml-ui-template-0.0.1.dar --script-name Main:setup --ledger-host localhost --ledger-port 6865 --wall-clock-time
+    daml start --start-navigator 'no'
 
 Generate the Typescript code:
 
-    daml codegen ts .daml/dist/daml-ui-template-0.0.1.dar -o daml-ts/src
+    daml codegen ts -o daml2ts -p package.json .daml/dist/*.dar
 
 Install the Javascript dependencies:
 
-    yarn workspaces run install
+    yarn install
 
 Build the UI code:
 

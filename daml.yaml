@@ -5,6 +5,10 @@ parties:
   - Alice
   - Bob
 version: 0.0.1
+init-script: Main:setup
+sandbox-options:
+  - --ledgerid=daml-ui-template
+  - -w
 dependencies:
   - daml-prim
   - daml-stdlib

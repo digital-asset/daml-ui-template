@@ -6,7 +6,7 @@ import { Asset } from "@daml2ts/daml-ui-template-0.0.1/lib/Main";
 export default function Report() {
 
   const assets = useStreamQuery(Asset);
-  const [exerciseGive] = useExercise(Asset.Give);
+  const exerciseGive = useExercise(Asset.Give);
 
   return (
     <>
