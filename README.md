@@ -33,7 +33,13 @@ Build the UI code:
 
 Start up the development server:
 
-    cd ui && yarn start
+You can run the Javascript version of the app:
+
+    cd ui-js && yarn start
+
+Or the Typescript version of the app:
+
+    cd ui-ts && yarn start
 
 This opens a browser page pointing to `http://localhost:3000/#/login`. Note that the development server serves content via http and should not be exposed as is to a public-facing network.
 
@@ -59,15 +65,26 @@ daml build -o daml-ui-template.dar
 
 at the root of your repository. Afterwards, open to the DABL website, select the ledger you want to deploy to, go to the "DAML" selection and upload the DAR `daml-ui-template.dar` you have just created.
 
-To upload the UI, create a ZIP file containing all your UI assets by executing
+To upload the UI, create a ZIP file containing all your UI assets. First build all projects:
 
 ```bash
 daml build
 daml codegen ts .daml/dist/daml-ui-template-0.0.1.dar -o daml2ts -p package.json
 yarn workspaces run build
-(cd ui && zip -r ../daml-ui-template.zip build)
 ```
 
-at the root of the repository. Afterwards, select the "UI Assets" tab of your chosen ledger on the DABL website, upload the ZIP file `daml-ui-template.zip` you have just created and publish it.
+Then, zip either the Javascript build output:
+
+```bash
+(cd ui-js && zip -r ../daml-ui-template.zip build)
+```
+
+Or the Typescript build output:
+
+```bash
+(cd ui-ts && zip -r ../daml-ui-template.zip build)
+```
+
+Afterwards, select the "UI Assets" tab of your chosen ledger on the DABL website, upload the ZIP file `daml-ui-template.zip` you have just created and publish it.
 
 To see your deployed instance of create-daml-app in action, follow the "Visit site" link at the top right corner of your "UI Assets" page.
