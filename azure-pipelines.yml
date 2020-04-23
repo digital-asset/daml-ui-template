@@ -49,17 +49,33 @@ jobs:
         condition: eq(variables.DAML_CACHE_HIT, 'true')
         displayName: daml-cache-hit
 
-      # Build and test TypeScript
+      # Build and test JavaScript
       - bash: |
           set -euo pipefail
 
           yarn --version
           export PATH=$HOME/.daml/bin:$PATH
           daml build
-          daml codegen ts -o daml2ts -p package.json .daml/dist/*.dar
+          daml codegen js -o daml2ts .daml/dist/*.dar
+          cd ui-js
           yarn install
-          yarn workspaces run build
-          yarn workspaces run lint
+          yarn build
+          yarn lint
+          #CI=yes yarn workspaces run test --ci --all
+        displayName: build-and-test-js
+
+        # Build and test TypeScript
+      - bash: |
+          set -euo pipefail
+
+          yarn --version
+          export PATH=$HOME/.daml/bin:$PATH
+          daml build
+          daml codegen js -o daml2ts .daml/dist/*.dar
+          cd ui-ts
+          yarn install
+          yarn build
+          yarn lint
           #CI=yes yarn workspaces run test --ci --all
         displayName: build-and-test-ts
 
