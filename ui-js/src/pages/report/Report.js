@@ -1,12 +1,15 @@
 import React from "react";
 import Contracts from "../../components/Contracts/Contracts";
-import { useStreamQuery, useExercise } from "@daml/react";
-import { Asset } from "@daml2ts/daml-ui-template-0.0.1/lib/Main";
+import { useStreamQuery, useLedger } from "@daml/react";
+import { Main } from "@daml2js/daml-ui-template-0.0.1";
 
 export default function Report() {
 
-  const assets = useStreamQuery(Asset);
-  const exerciseGive = useExercise(Asset.Give);
+  const ledger = useLedger();
+  const assets = useStreamQuery(Main.Asset);
+  const exerciseGive = function(cid, newOwner) {
+    ledger.exercise(Main.Asset.Give, cid, { newOwner });
+  };
 
   return (
     <>
@@ -18,7 +21,7 @@ export default function Report() {
           ["Owner", "payload.owner"],
           ["Name", "payload.name"],
         ]}
-        actions={[["Give", (c, newOwner) => { exerciseGive(c.contractId, { newOwner: newOwner }); }, "New Owner"]]}
+        actions={[["Give", (c, newOwner) => { exerciseGive(c.contractId, newOwner); }, "New Owner"]]}
       />
     </>
   );
