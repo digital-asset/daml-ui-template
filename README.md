@@ -21,25 +21,21 @@ Start the sandbox ledger:
 
 Generate the Typescript code:
 
-    daml codegen ts -o daml2ts -p package.json .daml/dist/*.dar
+    daml codegen js -o daml2ts .daml/dist/*.dar
 
-Install the Javascript dependencies:
+Build and run the UI:
 
+For Javascript:
+
+    cd ui-js
     yarn install
+    yarn start
 
-Build the UI code:
+For Typescript:
 
-    yarn workspaces run build
-
-Start up the development server:
-
-You can run the Javascript version of the app:
-
-    cd ui-js && yarn start
-
-Or the Typescript version of the app:
-
-    cd ui-ts && yarn start
+    cd ui-ts
+    yarn install
+    yarn start
 
 This opens a browser page pointing to `http://localhost:3000/#/login`. Note that the development server serves content via http and should not be exposed as is to a public-facing network.
 
@@ -69,20 +65,25 @@ To upload the UI, create a ZIP file containing all your UI assets. First build a
 
 ```bash
 daml build
-daml codegen ts .daml/dist/daml-ui-template-0.0.1.dar -o daml2ts -p package.json
-yarn workspaces run build
+daml codegen js -o daml2ts .daml/dist/daml-ui-template-0.0.1.dar
 ```
 
 Then, zip either the Javascript build output:
 
 ```bash
-(cd ui-js && zip -r ../daml-ui-template.zip build)
+    cd ui-js
+    yarn install
+    yarn build
+    zip -r ../daml-ui-template.zip build
 ```
 
 Or the Typescript build output:
 
 ```bash
-(cd ui-ts && zip -r ../daml-ui-template.zip build)
+    cd ui-ts
+    yarn install
+    yarn build
+    zip -r ../daml-ui-template.zip build
 ```
 
 Afterwards, select the "UI Assets" tab of your chosen ledger on the DABL website, upload the ZIP file `daml-ui-template.zip` you have just created and publish it.
