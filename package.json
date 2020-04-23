@@ -1,7 +1,0 @@
-{
-    "private": true,
-    "workspaces": [
-        "ui-js",
-        "ui-ts"
-    ]
-}
