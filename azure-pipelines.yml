@@ -56,7 +56,7 @@ jobs:
           yarn --version
           export PATH=$HOME/.daml/bin:$PATH
           daml build
-          daml codegen js -o daml2ts .daml/dist/*.dar
+          daml codegen js -o daml2js .daml/dist/*.dar
           cd ui-js
           yarn install
           yarn build
@@ -71,7 +71,7 @@ jobs:
           yarn --version
           export PATH=$HOME/.daml/bin:$PATH
           daml build
-          daml codegen js -o daml2ts .daml/dist/*.dar
+          daml codegen js -o daml2js .daml/dist/*.dar
           cd ui-ts
           yarn install
           yarn build
