@@ -60,7 +60,6 @@ jobs:
           cd ui-js
           yarn install
           yarn build
-          yarn lint
           #CI=yes yarn workspaces run test --ci --all
         displayName: build-and-test-js
 
@@ -75,7 +74,6 @@ jobs:
           cd ui-ts
           yarn install
           yarn build
-          yarn lint
           #CI=yes yarn workspaces run test --ci --all
         displayName: build-and-test-ts
 
