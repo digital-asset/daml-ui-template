@@ -17,7 +17,7 @@ Build the DAML project:
 
 Start the sandbox ledger:
 
-    daml start --start-navigator 'no'
+    daml start --start-navigator=no
 
 Generate the Typescript code:
 
@@ -37,6 +37,10 @@ For Typescript:
     yarn install
     yarn start
 
+If you change your DAML models and regenerate the JavaScript code, you need to run this in your UI directory:
+
+    yarn install --force --frozen-lockfile
+    
 This opens a browser page pointing to `http://localhost:3000/#/login`. Note that the development server serves content via http and should not be exposed as is to a public-facing network.
 
 Login as `Alice` (case sensitive), leaving the password blank.
