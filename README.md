@@ -21,7 +21,7 @@ Start the sandbox ledger:
 
 Generate the Typescript code:
 
-    daml codegen js -o daml2ts .daml/dist/*.dar
+    daml codegen js -o daml2js .daml/dist/*.dar
 
 Build and run the UI:
 
@@ -65,7 +65,7 @@ To upload the UI, create a ZIP file containing all your UI assets. First build a
 
 ```bash
 daml build
-daml codegen js -o daml2ts .daml/dist/daml-ui-template-0.0.1.dar
+daml codegen js -o daml2js .daml/dist/daml-ui-template-0.0.1.dar
 ```
 
 Then, zip either the Javascript build output:
