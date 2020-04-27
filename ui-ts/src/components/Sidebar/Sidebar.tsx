@@ -69,6 +69,14 @@ function Sidebar({ location } : RouteComponentProps) {
           location={location}
           isSidebarOpened={isSidebarOpened}
         />
+        <SidebarLink
+          key="NewAsset"
+          label="New Asset"
+          path="/app/newasset"
+          icon={(<ListIcon />)}
+          location={location}
+          isSidebarOpened={isSidebarOpened}
+        />
       </List>
     </Drawer>
   );
