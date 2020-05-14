@@ -6,6 +6,7 @@ module Main where
 
 import Daml.Script
 import Prelude hiding (submit)
+import DA.Date
 
 type AssetId = ContractId Asset
 
@@ -14,6 +15,8 @@ template Asset
     issuer : Party
     owner  : Party
     name   : Text
+    dateOfIssuance : Date
+    value : Int
   where
     ensure name /= ""
     signatory issuer
@@ -25,16 +28,48 @@ template Asset
           create this with
             owner = newOwner
 
+template AssetCreatorRole
+  with
+    roleOwner: Party
+  where
+    signatory roleOwner
+    controller roleOwner can
+      nonconsuming CreateAsset : ContractId Asset
+        with
+          owner  : Party
+          name   : Text
+          dateOfIssuance : Date
+          value : Int
+        do
+          create Asset with issuer = roleOwner, ..
+
+now : Date
+now = date 1 Jan 2020
+
 setup : Script ()
 setup = do
   alice <- allocatePartyWithHint "Alice" $ PartyIdHint with partyIdHint = "Alice"
   bob <- allocatePartyWithHint "Bob" $ PartyIdHint with partyIdHint = "Bob"
 
-  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "TV"
-  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Car"
-  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Boat"
+  submit alice $
+    createCmd Asset with
+      issuer = alice; owner = alice; name = "TV"; dateOfIssuance = now; value = 10
+  submit alice $
+    createCmd Asset with
+      issuer = alice; owner = alice; name = "Car"; dateOfIssuance = now; value = 300
+  submit alice $
+    createCmd Asset with
+      issuer = alice; owner = alice; name = "Boat"; dateOfIssuance = now; value = 900
 
-  submit bob do createCmd Asset with issuer = bob; owner = bob; name = "Bike"
-  submit bob do createCmd Asset with issuer = bob; owner = bob; name = "House"
+  submit bob $
+    createCmd Asset with
+      issuer = bob; owner = bob; name = "Bike"; dateOfIssuance = now; value = 20
+  submit bob $
+    createCmd Asset with
+      issuer = bob; owner = bob; name = "House"; dateOfIssuance = now; value = 4000
+
+  submit alice $
+    createCmd AssetCreatorRole with
+      roleOwner = alice
 
   pure ()

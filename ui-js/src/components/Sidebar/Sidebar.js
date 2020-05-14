@@ -69,6 +69,14 @@ function Sidebar({ location }) {
           location={location}
           isSidebarOpened={isSidebarOpened}
         />
+        <SidebarLink
+          key="Role"
+          label="Role"
+          path="/app/role"
+          icon={(<ListIcon />)}
+          location={location}
+          isSidebarOpened={isSidebarOpened}
+        />
       </List>
     </Drawer>
   );
