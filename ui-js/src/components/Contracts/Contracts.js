@@ -20,6 +20,7 @@ export default function Contracts({ contracts, columns, actions=[], dialogs=[] }
   dialogs = dialogs ? dialogs : [];
 
   const classes = useStyles();
+
   var [state, setState] = useState({});
   const handleChange = name => (event => { setState({ ...state, [name]: event.target.value }); });
 
@@ -73,9 +74,10 @@ export default function Contracts({ contracts, columns, actions=[], dialogs=[] }
     return (
       <>
       {dialogFieldSpec.map(spec =>
-       (spec["type"] === "menu")
+       <Grid item className={classes.marginB}>
+       {(spec["type"] === "menu")
         ?
-          <FormControl className={classes.formControl} key={spec["name"]}>
+          <FormControl className={classes.formControl} key={spec["name"]} fullWidth={true}>
           <InputLabel>{spec["name"]}</InputLabel>
           <Select value={getDialogState(name, spec["name"], spec["items"][0])} defaultValue={spec["items"][0]} onChange={(event) => setDialogState(name, spec["name"], event.target.value)}>
             {
@@ -88,11 +90,13 @@ export default function Contracts({ contracts, columns, actions=[], dialogs=[] }
         : <TextField
             required
             autoFocus
+            fullWidth={true}
             key={spec["name"]}
             label={spec["name"]}
             type={spec["type"]}
             onChange={(event) => setDialogState(name, spec["name"], event.target.value)}
-            />
+            />}
+      </Grid>
       )}
       </>
       );
@@ -161,9 +165,11 @@ export default function Contracts({ contracts, columns, actions=[], dialogs=[] }
                         New Issuer
                       </DialogTitle>
                       <DialogContent>
+                        <Grid>
                         <form className={classes.root}>
                           {addFormFields(dialog[0], dialog[1])}
                         </form>
+                        </Grid>
                       </DialogContent>
                       <DialogActions>
                         <Button onClick={() => setDialogOpen(dialog[0], false)} color="primary">
