@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import ReactJson from "react-json-view";
-import { FormControl, InputLabel, Select, MenuItem, Grid, Table, TableHead, TableRow, TableCell, TableBody, TextField, Button } from "@material-ui/core";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
+import { Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select, MenuItem, Grid, Table, TableHead, TableRow, TableCell, TableBody, TextField, Button } from "@material-ui/core";
 import { useStyles } from "./styles";
 
 export function field(name, fieldType, items) {
@@ -162,7 +161,7 @@ export default function Contracts({ contracts, columns, actions=[], dialogs=[] }
                       </Button>
                     <Dialog open={getDialogOpen(dialog[0])} onClose={() => ({})} maxWidth="sm" fullWidth>
                       <DialogTitle>
-                        New Issuer
+                        {dialog[0]}
                       </DialogTitle>
                       <DialogContent>
                         <Grid>
