@@ -24,4 +24,7 @@ export default makeStyles((theme : any) => createStyles({
       borderBottomColor: `${theme.palette.primary.light} !important`,
     },
   },
+  marginB: {
+    marginBottom: theme.spacing(2),
+  }
 }));

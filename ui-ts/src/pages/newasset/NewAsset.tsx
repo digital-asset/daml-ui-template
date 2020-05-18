@@ -6,12 +6,14 @@ import { Grid, Typography, TextField, Button } from "@material-ui/core";
 
 function NewAsset({ history } : RouteComponentProps) {
 
+  const emptyAsset =
+  { issuer: "", owner: "", name: "", dateOfIssuance: "", value: "" }
   const ledger = useLedger();
-  var [state, setState] = useState<Main.Asset>({ issuer: "", owner: "", name: "" });
+  var [state, setState] = useState<Main.Asset>(emptyAsset);
 
   const createAsset = async () => {
     await ledger.create(Main.Asset, state);
-    setState({ issuer: "", owner: "", name: "" });
+    setState(emptyAsset);
     history.push("/app/report");
   }
   return (
