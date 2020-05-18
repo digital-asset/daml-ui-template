@@ -7,5 +7,5 @@ export default function Default() {
 
   const assets = useStreamQuery(Main.Asset);
 
-  return (<Contracts contracts={assets.contracts} columns={[]} actions={[]} />);
+  return (<Contracts contracts={assets.contracts} columns={[]} actions={[]} dialogs={[]} />);
 }

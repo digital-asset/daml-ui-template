@@ -25,6 +25,7 @@ export default function Report() {
         actions={[
           { name: "Give", handle: (c, newOwner) => { exerciseGive(c.contractId, newOwner); }, paramName: "New Owner" }
         ]}
+        dialogs={[]}
       />
     </>
   );
