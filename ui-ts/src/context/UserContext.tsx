@@ -2,12 +2,17 @@ import React from "react";
 import { History } from 'history';
 import { createToken, dablLoginUrl } from "../config";
 
-
-type UserState = {
-  isAuthenticated : boolean
-  token : string | null
-  party : string | null
+type AuthenticatedUser = {
+  isAuthenticated : true
+  token : string
+  party : string
 }
+
+type UnAthenticated = {
+  isAuthenticated : false
+}
+
+type UserState = UnAthenticated | AuthenticatedUser
 
 type LoginSuccess = {
   type : "LOGIN_SUCCESS"
@@ -25,17 +30,17 @@ type SignoutSuccess = {
 
 type LoginAction = LoginSuccess | LoginFailure | SignoutSuccess
 
-const UserStateContext = React.createContext<UserState>({ isAuthenticated: false, token: "", party: "" });
+const UserStateContext = React.createContext<UserState>({ isAuthenticated: false });
 const UserDispatchContext = React.createContext<React.Dispatch<LoginAction>>({} as React.Dispatch<LoginAction>);
 
-function userReducer(state : UserState, action : LoginAction) {
+function userReducer(state : UserState, action : LoginAction) : UserState {
   switch (action.type) {
     case "LOGIN_SUCCESS":
-      return { ...state, isAuthenticated: true, token: action.token, party: action.party };
+      return { isAuthenticated: true, token: action.token, party: action.party };
     case "LOGIN_FAILURE":
-      return { ...state, isAuthenticated: false };
+      return { isAuthenticated: false };
     case "SIGN_OUT_SUCCESS":
-      return { ...state, isAuthenticated: false };
+      return { isAuthenticated: false };
   }
 }
 
@@ -43,11 +48,8 @@ const UserProvider : React.FC = ({ children }) => {
   const party = localStorage.getItem("daml.party")
   const token = localStorage.getItem("daml.token")
 
-  var [state, dispatch] = React.useReducer<React.Reducer<UserState,LoginAction>>(userReducer, {
-    isAuthenticated: !!token,
-    token,
-    party
-  });
+  let initState : UserState = (!!party && !!token) ? { isAuthenticated : true, token, party } : { isAuthenticated : false };
+  var [state, dispatch] = React.useReducer<React.Reducer<UserState,LoginAction>>(userReducer, initState);
 
   return (
     <UserStateContext.Provider value={state}>

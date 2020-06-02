@@ -18,29 +18,33 @@ function Layout() {
   const user = useUserState();
   const layoutState = useLayoutState();
 
-  return (
-    <DamlLedger party={user.party} token={user.token} httpBaseUrl={httpBaseUrl} wsBaseUrl={wsBaseUrl}>
-      <div className={classes.root}>
-          <>
-            <Header />
-            <Sidebar />
-            <div
-              className={classnames(classes.content, {
-                [classes.contentShift]: layoutState.isSidebarOpened,
-              })}
-            >
-              <div className={classes.fakeToolbar} />
-              <Switch>
-                <Route path="/app/default" component={Default} />
-                <Route path="/app/report" component={Report} />
-                <Route path="/app/newasset" component={NewAsset} />
-                <Route path="/app/role" component={Role} />
-              </Switch>
-            </div>
-          </>
-      </div>
-    </DamlLedger>
-  );
+  if(!user.isAuthenticated){
+    return null;
+  } else {
+    return (
+      <DamlLedger party={user.party} token={user.token} httpBaseUrl={httpBaseUrl} wsBaseUrl={wsBaseUrl}>
+        <div className={classes.root}>
+            <>
+              <Header />
+              <Sidebar />
+              <div
+                className={classnames(classes.content, {
+                  [classes.contentShift]: layoutState.isSidebarOpened,
+                })}
+              >
+                <div className={classes.fakeToolbar} />
+                <Switch>
+                  <Route path="/app/default" component={Default} />
+                  <Route path="/app/report" component={Report} />
+                  <Route path="/app/newasset" component={NewAsset} />
+                  <Route path="/app/role" component={Role} />
+                </Switch>
+              </div>
+            </>
+        </div>
+      </DamlLedger>
+    );
+  }
 }
 
 export default withRouter(Layout);

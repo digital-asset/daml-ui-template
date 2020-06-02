@@ -50,7 +50,10 @@ function Header({ history } : RouteComponentProps) {
           DAML App Template
         </Typography>
         <div className={classes.grow} />
-        <Typography variant="h6">User: {userState.party}</Typography>
+        { userState.isAuthenticated
+        ? <Typography variant="h6">User: {userState.party}</Typography>
+        : null
+        }
         <IconButton
           color="inherit"
           aria-haspopup="true"
