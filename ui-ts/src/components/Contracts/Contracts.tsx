@@ -4,9 +4,11 @@ import { DialogTitle, DialogContent, Dialog, DialogActions, FormControl, InputLa
 import useStyles from "./styles";
 import { CreateEvent } from "@daml/ledger";
 
-type ColumnAction = {
+// The 'T extends object' type parameter represents the contract template type.
+
+type ColumnAction<T extends object> = {
   name : string
-  handle : (c : CreateEvent<any>, p : string) => void
+  handle : (c : CreateEvent<T>, p : string) => void
   paramName : string
 }
 
@@ -20,12 +22,12 @@ type DialogFieldSpec = {
   fieldType : DialogFieldType
 }
 
-type DialogAction = (c : CreateEvent<any>, p : {}) => void
+type DialogAction<T extends object> = (c : CreateEvent<T>, p : {}) => void
 
-type ColumnDialog = {
+type ColumnDialog<T extends object> = {
   name : string
   dialogFields : DialogFieldSpec[]
-  action : DialogAction
+  action : DialogAction<T>
 }
 
 type ColumnDefinition = {
@@ -33,11 +35,11 @@ type ColumnDefinition = {
   path : string
 }
 
-type ContractsProps = {
-  contracts : readonly CreateEvent<any>[]
+type ContractsProps<T extends object> = {
+  contracts : readonly CreateEvent<T>[]
   columns : ColumnDefinition[]
-  actions : ColumnAction[]
-  dialogs : ColumnDialog[]
+  actions : ColumnAction<T>[]
+  dialogs : ColumnDialog<T>[]
 }
 
 export const text: CommonFieldSpec = { "kind": "text" }
@@ -50,7 +52,7 @@ export function field(name: string, fieldType: DialogFieldType): DialogFieldSpec
   return { name, fieldType }
 }
 
-export default function Contracts({ contracts, columns, actions, dialogs } : ContractsProps) {
+export default function Contracts<T extends object>({ contracts, columns, actions, dialogs } : ContractsProps<T>) {
 
   const isDefault = columns.length === 0;
   const cols = isDefault ? [ { name: "TemplateId", path: "templateId" }, { name: "ContractId", path: "contractId" } ] : columns;
@@ -98,7 +100,7 @@ export default function Contracts({ contracts, columns, actions, dialogs } : Con
     return (state[name] && state[name][dialogOpenStateName]) || false;
   }
 
-  function doDialogAction(name : string, action : DialogAction, contract : CreateEvent<any>) {
+  function doDialogAction<T extends object>(name : string, action : DialogAction<T>, contract : CreateEvent<T>) {
     const payload = { ...state[name] };
     delete payload[dialogOpenStateName];
     action(contract, payload);

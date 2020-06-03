@@ -9,8 +9,8 @@ export default function Role() {
 
   const ledger = useLedger();
   const roles = useStreamQuery(Main.AssetCreatorRole);
-  const doCreate = function(contract: CreateEvent<any>, params: any) {
-    const payload = {
+  const doCreate = function(contract: CreateEvent<Main.AssetCreatorRole>, params: any) {
+    const payload : Main.CreateAsset = {
       owner: params["Owner"],
       name: params["Name"],
       dateOfIssuance: params["Date of issuance"],

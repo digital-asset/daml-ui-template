@@ -1,19 +1,21 @@
 import React from "react";
 
-const LayoutStateContext = React.createContext<LayoutState>({ isSidebarOpened: true });
-const LayoutDispatchContext = React.createContext<React.Dispatch<any>>({} as React.Dispatch<any>);
 
 type LayoutState = {
   isSidebarOpened : boolean
 }
 
-function layoutReducer(state : LayoutState, action : any) {
+type LayoutAction = {
+  type : "TOGGLE_SIDEBAR"
+}
+
+const LayoutStateContext = React.createContext<LayoutState>({ isSidebarOpened: true });
+const LayoutDispatchContext = React.createContext<React.Dispatch<LayoutAction>>({} as React.Dispatch<LayoutAction>);
+
+function layoutReducer(state : LayoutState, action : LayoutAction) {
   switch (action.type) {
     case "TOGGLE_SIDEBAR":
       return { ...state, isSidebarOpened: !state.isSidebarOpened };
-    default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
-    }
   }
 }
 
@@ -49,7 +51,7 @@ function useLayoutDispatch() {
 export { LayoutProvider, useLayoutState, useLayoutDispatch, toggleSidebar };
 
 // ###########################################################
-function toggleSidebar(dispatch : React.Dispatch<any>) {
+function toggleSidebar(dispatch : React.Dispatch<LayoutAction>) {
   dispatch({
     type: "TOGGLE_SIDEBAR",
   });
