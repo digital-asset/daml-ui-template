@@ -11,7 +11,6 @@ import DamlLedger from "@daml/react";
 import { useUserState } from "../../context/UserContext";
 import Default from "../../pages/default/Default";
 import { wsBaseUrl, httpBaseUrl } from "../../config";
-import NewAsset from "../../pages/newasset/NewAsset";
 
 function Layout() {
   const classes = useStyles();
@@ -36,7 +35,6 @@ function Layout() {
                 <Switch>
                   <Route path="/app/default" component={Default} />
                   <Route path="/app/report" component={Report} />
-                  <Route path="/app/newasset" component={NewAsset} />
                   <Route path="/app/role" component={Role} />
                 </Switch>
               </div>
