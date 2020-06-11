@@ -5,7 +5,6 @@ daml 1.2
 module Main where
 
 import Daml.Script
-import Prelude hiding (submit)
 import DA.Date
 
 type AssetId = ContractId Asset
@@ -15,11 +14,12 @@ template Asset
     issuer : Party
     owner  : Party
     name   : Text
-    dateOfIssuance : Date
-    value : Int
+    dateOfAppraisal : Date
+    value : Decimal
   where
     ensure name /= ""
     signatory issuer
+
     controller owner can
       Give : AssetId
         with
@@ -27,49 +27,27 @@ template Asset
         do
           create this with
             owner = newOwner
-
-template AssetCreatorRole
-  with
-    roleOwner: Party
-  where
-    signatory roleOwner
-    controller roleOwner can
-      nonconsuming CreateAsset : ContractId Asset
+            
+    controller issuer can            
+      Appraise : AssetId
         with
-          owner  : Party
-          name   : Text
-          dateOfIssuance : Date
-          value : Int
+          newDateOfAppraisal : Date
+          newValue : Decimal
         do
-          create Asset with issuer = roleOwner, ..
-
-now : Date
-now = date 1 Jan 2020
+          create this with
+            dateOfAppraisal = newDateOfAppraisal
+            value = newValue
 
 setup : Script ()
 setup = do
   alice <- allocatePartyWithHint "Alice" $ PartyIdHint with partyIdHint = "Alice"
   bob <- allocatePartyWithHint "Bob" $ PartyIdHint with partyIdHint = "Bob"
 
-  submit alice $
-    createCmd Asset with
-      issuer = alice; owner = alice; name = "TV"; dateOfIssuance = now; value = 10
-  submit alice $
-    createCmd Asset with
-      issuer = alice; owner = alice; name = "Car"; dateOfIssuance = now; value = 300
-  submit alice $
-    createCmd Asset with
-      issuer = alice; owner = alice; name = "Boat"; dateOfIssuance = now; value = 900
-
-  submit bob $
-    createCmd Asset with
-      issuer = bob; owner = bob; name = "Bike"; dateOfIssuance = now; value = 20
-  submit bob $
-    createCmd Asset with
-      issuer = bob; owner = bob; name = "House"; dateOfIssuance = now; value = 4000
-
-  submit alice $
-    createCmd AssetCreatorRole with
-      roleOwner = alice
+  let now = date 2020 Jan 1
+  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "TV"; dateOfAppraisal = now; value = 1_000.0
+  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Car"; dateOfAppraisal = now; value = 30_000.0
+  submit alice do createCmd Asset with issuer = alice; owner = bob; name = "Boat"; dateOfAppraisal = now; value = 90_000.0
+  submit bob do createCmd Asset with issuer = bob; owner = alice; name = "Bike"; dateOfAppraisal = now; value = 200.0
+  submit bob do createCmd Asset with issuer = bob; owner = bob; name = "House"; dateOfAppraisal = now; value = 400_000.0
 
   pure ()

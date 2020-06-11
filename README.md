@@ -11,35 +11,22 @@ This repository contains a simple UI template for a DAML application. It provide
 
 ## Quick Start
 
-Build the DAML project:
+Build the DAML models and the UI project:
 
-    daml build
+    make
 
 Start the sandbox ledger:
 
-    daml start --start-navigator=no
+    daml start
 
-Generate the Typescript code:
+Start the UI:
 
-    daml codegen js -o daml2js .daml/dist/*.dar
-
-Build and run the UI:
-
-For Javascript:
-
-    cd ui-js
-    yarn install
+    cd ui
     yarn start
 
-For Typescript:
+If you change your DAML models make sure to rebuild using:
 
-    cd ui-ts
-    yarn install
-    yarn start
-
-If you change your DAML models and regenerate the JavaScript code, you need to run this in your UI directory:
-
-    yarn install --force --frozen-lockfile
+    make
     
 This opens a browser page pointing to `http://localhost:3000/#/login`. Note that the development server serves content via http and should not be exposed as is to a public-facing network.
 
