@@ -2,6 +2,12 @@ build:
 	daml build
 	daml codegen js -o daml.js .daml/dist/*.dar
 	cd ui && yarn install --force --frozen-lockfile
+	cd ui && yarn build
+	
+deploy: build
+	mkdir -p deploy
+	cp .daml/dist/*.dar deploy
+	cd ui && zip -r ../deploy/daml-ui-template.zip build
 
 clean:
 	rm -rf .daml
