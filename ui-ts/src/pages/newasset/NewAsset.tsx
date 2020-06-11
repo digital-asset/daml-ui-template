@@ -6,8 +6,9 @@ import { Grid, Typography, TextField, Button } from "@material-ui/core";
 
 function NewAsset({ history } : RouteComponentProps) {
 
+  const today = (new Date()).toISOString().slice(0,10);
   const emptyAsset =
-  { issuer: "", owner: "", name: "", dateOfIssuance: "", value: "" }
+  { issuer: "", owner: "", name: "", dateOfAppraisal: today, value: "0" }
   const ledger = useLedger();
   var [state, setState] = useState<Main.Asset>(emptyAsset);
 
@@ -27,6 +28,12 @@ function NewAsset({ history } : RouteComponentProps) {
     <Grid item xs={6}></Grid>
     <Grid item xs={3} style={{ padding: "10px" }}><Typography>Name</Typography></Grid>
     <Grid item xs={3} style={{ padding: "10px" }}><TextField onChange={e => setState({ ...state, "name": e.target.value })} /></Grid>
+    <Grid item xs={6}></Grid>
+    <Grid item xs={3} style={{ padding: "10px" }}><Typography>Date of Appraisal</Typography></Grid>
+    <Grid item xs={3} style={{ padding: "10px" }}><TextField type="date" value={state.dateOfAppraisal} onChange={e => setState({ ...state, "dateOfAppraisal": e.target.value })} /></Grid>
+    <Grid item xs={6}></Grid>
+    <Grid item xs={3} style={{ padding: "10px" }}><Typography>Value</Typography></Grid>
+    <Grid item xs={3} style={{ padding: "10px" }}><TextField type="number" value={state.value} onChange={e => setState({ ...state, "value": e.target.value })} /></Grid>
     <Grid item xs={6}></Grid>
     <Grid item xs={12} style={{ paddingTop: "30px" }}><Button color="primary" variant="contained" onClick={createAsset}>Create</Button></Grid>
   </Grid>

@@ -139,6 +139,43 @@ export default function Contracts<T extends object>({ contracts, columns, action
       );
   }
 
+  function addDialogElements<T extends object>(dialog : ColumnDialog<T>, contract : CreateEvent<T>){
+    let dialogKey = dialog.name + contract.contractId;    // Need a contract specific way to modify state.
+    return (
+      <TableCell className={classes.tableCell}>
+        <Button
+          color="primary"
+          size="small"
+          className="px-2"
+          variant="contained"
+          onClick={() => setDialogOpen(dialogKey, true)}
+        >
+          {dialog.name}
+        </Button>
+        <Dialog open={getDialogOpen(dialogKey)} onClose={() => ({})} maxWidth="sm" fullWidth>
+          <DialogTitle>
+            {dialog.name + " " + contract.contractId}
+          </DialogTitle>
+          <DialogContent>
+            <Grid>
+            <form>
+              {addFormFields(dialogKey, dialog.dialogFields)}
+            </form>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDialogOpen(dialogKey, false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={() => doDialogAction(dialogKey, dialog.action, contract) } color="primary">
+              Okay
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </TableCell>
+    );
+  }
+
   return (
     <>
       <Grid container spacing={4}>
@@ -186,39 +223,7 @@ export default function Contracts<T extends object>({ contracts, columns, action
                       </Button>
                     </TableCell>)
                 )}
-                { dialogs.map(dialog => (
-                  <TableCell key={dialog.name} className={classes.tableCell}>
-                      <Button
-                        color="primary"
-                        size="small"
-                        className="px-2"
-                        variant="contained"
-                        onClick={() => setDialogOpen(dialog.name, true)}
-                      >
-                        {dialog.name}
-                      </Button>
-                    <Dialog open={getDialogOpen(dialog.name)} onClose={() => ({})} maxWidth="sm" fullWidth>
-                      <DialogTitle>
-                        {dialog.name}
-                      </DialogTitle>
-                      <DialogContent>
-                        <Grid>
-                        <form>
-                          {addFormFields(dialog.name, dialog.dialogFields)}
-                        </form>
-                        </Grid>
-                      </DialogContent>
-                      <DialogActions>
-                        <Button onClick={() => setDialogOpen(dialog.name, false)} color="primary">
-                          Cancel
-                        </Button>
-                        <Button onClick={() => doDialogAction(dialog.name, dialog.action, c) } color="primary">
-                          Okay
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                </TableCell>
-                ))}
+                { dialogs.map(dialog => addDialogElements(dialog, c))}
               </TableRow>
             ))}
           </TableBody>

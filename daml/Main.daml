@@ -15,7 +15,7 @@ template Asset
     issuer : Party
     owner  : Party
     name   : Text
-    dateOfIssuance : Date
+    dateOfAppraisal : Date
     value : Int
   where
     ensure name /= ""
@@ -28,20 +28,15 @@ template Asset
           create this with
             owner = newOwner
 
-template AssetCreatorRole
-  with
-    roleOwner: Party
-  where
-    signatory roleOwner
-    controller roleOwner can
-      nonconsuming CreateAsset : ContractId Asset
+    controller issuer can
+      Appraise : AssetId
         with
-          owner  : Party
-          name   : Text
-          dateOfIssuance : Date
-          value : Int
+          newDateOfAppraisal : Date
+          newValue : Int
         do
-          create Asset with issuer = roleOwner, ..
+          create this with
+            dateOfAppraisal = newDateOfAppraisal
+            value = newValue
 
 now : Date
 now = date 1 Jan 2020
@@ -53,23 +48,24 @@ setup = do
 
   submit alice $
     createCmd Asset with
-      issuer = alice; owner = alice; name = "TV"; dateOfIssuance = now; value = 10
+      issuer = alice; owner = alice; name = "TV"; dateOfAppraisal = now; value = 10
+  car <- submit alice $
+    createCmd Asset with
+      issuer = alice; owner = alice; name = "Car"; dateOfAppraisal = now; value = 300
   submit alice $
     createCmd Asset with
-      issuer = alice; owner = alice; name = "Car"; dateOfIssuance = now; value = 300
-  submit alice $
-    createCmd Asset with
-      issuer = alice; owner = alice; name = "Boat"; dateOfIssuance = now; value = 900
+      issuer = alice; owner = alice; name = "Boat"; dateOfAppraisal = now; value = 900
 
   submit bob $
     createCmd Asset with
-      issuer = bob; owner = bob; name = "Bike"; dateOfIssuance = now; value = 20
+      issuer = bob; owner = bob; name = "Bike"; dateOfAppraisal = now; value = 20
   submit bob $
     createCmd Asset with
-      issuer = bob; owner = bob; name = "House"; dateOfIssuance = now; value = 4000
+      issuer = bob; owner = bob; name = "House"; dateOfAppraisal = now; value = 4000
 
-  submit alice $
-    createCmd AssetCreatorRole with
-      roleOwner = alice
+  -- You drive it off the lot and then
+  car <- submit alice $
+    exerciseCmd car Appraise with
+      newDateOfAppraisal = date 2 Jan 2020; newValue = 290
 
   pure ()
