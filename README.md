@@ -50,7 +50,7 @@ The `Report` page is meant as an example, which you can copy and modify to your 
 
 Deploying `daml-ui-template` to the hosted DAML platform [project:DABL](http://projectdabl.com/) is straight forward:
 
-1. Build the deployment artefacts:
+1. Build the deployment artifacts:
 
 ```bash
 make deploy
