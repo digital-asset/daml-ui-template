@@ -21,7 +21,7 @@ make build
 daml start
 ```
 
-3. Start the UI
+3. In a new shell, start the UI
 ```
 cd ui
 yarn start
