@@ -7,48 +7,75 @@ import TableBody from "@material-ui/core/TableBody";
 import Button from "@material-ui/core/Button";
 import { useStreamQuery, useLedger, useParty } from "@daml/react";
 import { CreateEvent } from "@daml/ledger";
-import { Asset } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
-import { InputDialog, InputDialogProps, Field } from "./InputDialog";
+import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
+import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
 
 export default function Report() {
   const classes = useStyles();
 
-  const [ props, setProps ] = useState<InputDialogProps>({ open: false, title: "", fields: [], onClose: async () => {} });
-  const party = useParty();
-  const ledger = useLedger();
-  const assets = useStreamQuery(Asset).contracts;
-  
+  const defaultGive = { newOwner : " " };
+  const defaultGiveProps : InputDialogProps<Give> = {
+    open:false,
+    title: "Give Asset",
+    defaultValue:defaultGive,
+    fields : {
+      newOwner : {
+        label: "New Owner",
+        type: "selection",
+        items: [ "Alice", "Bob" ] } },
+    onClose: async () => {}
+  };
+
+  const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
+  const today = (new Date()).toISOString().slice(0,10);
+  const defaultAppraise = {
+    newDateOfAppraisal : today,
+    newValue : "0" };
+  const defaultAppraiseProps : InputDialogProps<Appraise> = {
+    open:false,
+    title: "Appraise Asset",
+    defaultValue:defaultAppraise,
+    fields : {
+      newDateOfAppraisal : {
+        label: "New Date of Appraisal",
+        type: "date" },
+      newValue : {
+        label: "New Value",
+        type: "number" }
+      },
+    onClose: async () => {}
+  };
+
+  const [ appraiseProps, setAppraiseProps ] = useState(defaultAppraiseProps);
   const showGive = (asset : CreateEvent<Asset>) => {
-    const fields : Field[] = [
-      { label: "New Owner", name: "newOwner", type: { items: [ "Alice", "Bob" ] } }
-    ]
-    const onClose = async (state : any) => {
+    const onClose = async (state : Give | null) => {
       console.log(state);
-      setProps({ open: false, title: "", fields: [], onClose: async () => {} });
+      setGiveProps({ ...defaultGiveProps, open:false});
       if (!state) return;
       await ledger.exercise(Asset.Give, asset.contractId, state);
     }
-    setProps({ open: true, title: "Give Asset", fields, onClose})
+    setGiveProps({ ...defaultGiveProps, open: true, onClose})
   };
 
+  const party = useParty();
+  const ledger = useLedger();
+  const assets = useStreamQuery(Asset).contracts;
+
   const showAppraise = (asset : CreateEvent<Asset>) => {
-    const fields : Field[] = [
-      { label: "New Date of Appraisal", name: "newDateOfAppraisal", type: "date" },
-      { label: "New Value", name: "newValue", type: "number" }
-    ]
-    const onClose = async (state : any) => {
+    const onClose = async (state : Appraise | null) => {
       console.log(state);
-      setProps({ open: false, title: "", fields: [], onClose: async () => {} });
+      setAppraiseProps({ ...defaultAppraiseProps, open:false});
       if (!state) return;
       await ledger.exercise(Asset.Appraise, asset.contractId, state);
     }
-    setProps({ open: true, title: "Appraise Asset", fields, onClose})
+    setAppraiseProps({...defaultAppraiseProps, open:true, onClose});
   };
 
   return (
     <>
-      <InputDialog { ...props } />
+      <InputDialog { ...giveProps } />
+      <InputDialog { ...appraiseProps } />
       <Table size="small">
         <TableHead>
           <TableRow className={classes.tableRow}>
