@@ -28,26 +28,6 @@ export default function Report() {
   };
 
   const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
-  const today = (new Date()).toISOString().slice(0,10);
-  const defaultAppraise = {
-    newDateOfAppraisal : today,
-    newValue : "0" };
-  const defaultAppraiseProps : InputDialogProps<Appraise> = {
-    open:false,
-    title: "Appraise Asset",
-    defaultValue:defaultAppraise,
-    fields : {
-      newDateOfAppraisal : {
-        label: "New Date of Appraisal",
-        type: "date" },
-      newValue : {
-        label: "New Value",
-        type: "number" }
-      },
-    onClose: async () => {}
-  };
-
-  const [ appraiseProps, setAppraiseProps ] = useState(defaultAppraiseProps);
   const showGive = (asset : CreateEvent<Asset>) => {
     const onClose = async (state : Give | null) => {
       console.log(state);
@@ -58,16 +38,35 @@ export default function Report() {
     setGiveProps({ ...defaultGiveProps, open: true, onClose})
   };
 
+
+  type UserSpecifiedAppraise = Pick<Appraise, "newValue">
+  const newDateOfAppraisal = (new Date()).toISOString().slice(0,10);
+  const defaultUserSpecifiedAppraise = {
+    newValue : "0" };
+  const defaultAppraiseProps : InputDialogProps<UserSpecifiedAppraise> = {
+    open:false,
+    title: "Appraise Asset",
+    defaultValue:defaultUserSpecifiedAppraise,
+    fields : {
+      newValue : {
+        label: "New Value",
+        type: "number" }
+      },
+    onClose: async () => {}
+  };
+  const [ appraiseProps, setAppraiseProps ] = useState(defaultAppraiseProps);
+
   const party = useParty();
   const ledger = useLedger();
   const assets = useStreamQuery(Asset).contracts;
 
   const showAppraise = (asset : CreateEvent<Asset>) => {
-    const onClose = async (state : Appraise | null) => {
+    const onClose = async (state : UserSpecifiedAppraise | null) => {
       console.log(state);
       setAppraiseProps({ ...defaultAppraiseProps, open:false});
       if (!state) return;
-      await ledger.exercise(Asset.Appraise, asset.contractId, state);
+      let withNewDateOfAppraisal = { ...state, newDateOfAppraisal};
+      await ledger.exercise(Asset.Appraise, asset.contractId, withNewDateOfAppraisal);
     }
     setAppraiseProps({...defaultAppraiseProps, open:true, onClose});
   };
