@@ -1,6 +1,7 @@
 node_modules
 .daml
-daml2js
+daml.js
+deploy
 *.log
 build
 .DS_Store

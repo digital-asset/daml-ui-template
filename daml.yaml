@@ -1,4 +1,4 @@
-sdk-version: 1.0.0
+sdk-version: 1.2.0
 name: daml-ui-template
 source: daml
 parties:
@@ -6,6 +6,7 @@ parties:
   - Bob
 version: 0.0.1
 init-script: Main:setup
+start-navigator: false
 sandbox-options:
   - --ledgerid=daml-ui-template
   - -w
