@@ -14,7 +14,7 @@ import useStyles from "./styles";
 export default function Report() {
   const classes = useStyles();
 
-  const defaultGive = { newOwner : " " };
+  const defaultGive = { newOwner : "" };
   const defaultGiveProps : InputDialogProps<Give> = {
     open:false,
     title: "Give Asset",
