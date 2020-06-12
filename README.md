@@ -9,7 +9,7 @@ This repository contains a simple UI template for a DAML application. It provide
 * [Yarn](https://yarnpkg.com/lang/en/docs/install/)
 * [DAML SDK](https://docs.daml.com/getting-started/installation.html)
 
-## Building & running locally
+## Building and running locally
 
 1. Build the DAML models and the UI project
 ```
