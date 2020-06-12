@@ -62,6 +62,6 @@ make deploy
 
 4. Select `Upload .zip` in the UI Assets section, and upload `deploy/daml-ui-template.zip`.
 
-5. Publish the deployed UI artefact from the App UI section of the page
+5. Publish the deployed UI artifact from the App UI section of the page.
 
 6. Follow the `View Site` link in the App UI section to open your fully deployed application.
