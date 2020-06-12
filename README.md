@@ -58,7 +58,7 @@ make deploy
 
 2. Log into your DABL account and create a new project and ledger.
 
-3. Select the ledger, click on `Update .dar` in the DAML section of the app artifacts, and upload `deploy/daml-ui-template-0.0.1.dar`
+3. Select the ledger, click on `Update .dar` in the DAML section of the app artifacts, and upload `deploy/daml-ui-template-0.0.1.dar`.
 
 4. Select `Upload .zip` in the UI Assets section, and upload `deploy/daml-ui-template.zip`.
 
