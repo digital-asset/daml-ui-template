@@ -36,7 +36,7 @@ make build
 
 ## Exploring the application
 
-- Login as `Alice` (case sensitive), leaving the password blank
+- Login as `Alice` (case sensitive), leaving the password blank.
 
 - You are now redirected to `http://localhost:3000/#/app/report` where you see a table with all `Asset` contracts listed.
 
