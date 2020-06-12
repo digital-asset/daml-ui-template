@@ -60,7 +60,7 @@ make deploy
 
 3. Select the ledger, click on `Update .dar` in the DAML section of the app artifacts, and upload `deploy/daml-ui-template-0.0.1.dar`
 
-4. Select `Upload .zip` in the UI Assets section, and upload `deploy/daml-ui-template.zip`
+4. Select `Upload .zip` in the UI Assets section, and upload `deploy/daml-ui-template.zip`.
 
 5. Publish the deployed UI artefact from the App UI section of the page
 
