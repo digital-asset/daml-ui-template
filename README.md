@@ -56,7 +56,7 @@ Deploying `daml-ui-template` to the hosted DAML platform [project:DABL](http://p
 make deploy
 ```
 
-2. Log into your DABL account and create a new project and ledger
+2. Log into your DABL account and create a new project and ledger.
 
 3. Select the ledger, click on `Update .dar` in the DAML section of the app artifacts, and upload `deploy/daml-ui-template-0.0.1.dar`
 
