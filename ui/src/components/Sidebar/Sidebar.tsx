@@ -24,6 +24,7 @@ const Sidebar = ({ location } : RouteComponentProps) => {
       <div className={classes.toolbar} />
       <List style={{ width: "100%" }}>
         <SidebarLink key={0} label="Report" path="/app/report" icon={(<ListIcon />)} location={location} />
+        <SidebarLink key={1} label="Session" path="/app/session" icon={(<ListIcon />)} location={location} />
       </List>
     </Drawer>
   );

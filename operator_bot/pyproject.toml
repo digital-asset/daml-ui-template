@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "bot"
+version = "1.0.0"
+description = "An operator bot for the daml-ui-template on DABL."
+authors = ["Digital Asset"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+dazl = "6.8"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

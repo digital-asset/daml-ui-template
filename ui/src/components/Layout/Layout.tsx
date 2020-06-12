@@ -4,7 +4,9 @@ import DamlLedger from "@daml/react";
 import Header from "../Header/Header";
 import Sidebar from "../Sidebar/Sidebar";
 import Report from "../../pages/report/Report";
-import { useUserState } from "../../context/UserContext";
+import Session from "../../pages/session/Session";
+import { CompleteWithinLedgerLogin, useUserState } from "../../context/UserContext";
+import { AliasesContextProvider } from "../../context/AliasesContext";
 import { wsBaseUrl, httpBaseUrl } from "../../config";
 import useStyles from "./styles";
 
@@ -17,18 +19,23 @@ const Layout = () => {
   } else {
     return (
       <DamlLedger party={user.party} token={user.token} httpBaseUrl={httpBaseUrl} wsBaseUrl={wsBaseUrl}>
-        <div className={classes.root}>
-            <>
-              <Header />
-              <Sidebar />
-              <div className={classes.content}>
-                <div className={classes.fakeToolbar} />
-                <Switch>
-                  <Route path="/app/report" component={Report} />
-                </Switch>
-              </div>
-            </>
-        </div>
+        <CompleteWithinLedgerLogin>
+          <AliasesContextProvider>
+            <div className={classes.root}>
+                <>
+                  <Header />
+                  <Sidebar />
+                  <div className={classes.content}>
+                    <div className={classes.fakeToolbar} />
+                    <Switch>
+                      <Route path="/app/report" component={Report} />
+                      <Route path="/app/session" component={Session} />
+                    </Switch>
+                  </div>
+                </>
+            </div>
+          </AliasesContextProvider>
+        </CompleteWithinLedgerLogin>
       </DamlLedger>
     );
   }

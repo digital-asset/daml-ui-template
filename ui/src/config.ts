@@ -20,6 +20,16 @@ const applicationId = "daml-ui-template";
 
 export const createToken = (party : string) => jwt.sign({ "https://daml.com/ledger-api": { ledgerId, applicationId, admin: true, actAs: [party], readAs: [party] } }, "secret")
 
+export function partyNameFromLocalJwtToken(token:string){
+  let decoded = jwt.decode(token);
+  if(!decoded || typeof(decoded) === "string"){
+    console.log(`local jwt not correctly format ${token}`);
+    return "";
+  } else {
+    return decoded["https://daml.com/ledger-api"]["actAs"][0];
+  }
+}
+
 let loginUrl = host.slice(1)
 loginUrl.unshift('login')
 

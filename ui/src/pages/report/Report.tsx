@@ -9,6 +9,7 @@ import { useStreamQuery, useLedger, useParty } from "@daml/react";
 import { CreateEvent } from "@daml/ledger";
 import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
+import { useAliasMap } from "../../context/AliasesContext";
 import useStyles from "./styles";
 
 export default function Report() {
@@ -24,9 +25,10 @@ export default function Report() {
     fields: {
       newOwner : {
         label: "New Owner",
-        type: "selection",
-        items: [ "Alice", "Bob" ] } },
-    onClose: async function() {}
+        type: "aliasedParties",
+        placeholder: "New Owner PartyId"
+      } },
+    onClose: async () => {}
   };
 
   const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
@@ -77,8 +79,8 @@ export default function Report() {
     fields: {
       owner: {
         label: "Owner",
-        type: "selection",
-        items: [ "Alice", "Bob" ],
+        type: "aliasedParties",
+        placeholder: "Owner"
       },
       name: {
         label: "Name of Asset",
@@ -106,6 +108,11 @@ export default function Report() {
     setNewAssetProps({...defaultNewAssetProps, open: true, onClose});
   };
 
+  const aliasMap = useAliasMap();
+  function identify(party:string):string{
+    return (party in aliasMap) ? aliasMap[party] : party;
+  }
+
   return (
     <>
       <InputDialog { ...giveProps } />
@@ -129,8 +136,8 @@ export default function Report() {
         <TableBody>
           {assets.map((a, i) => (
             <TableRow key={i} className={classes.tableRow}>
-              <TableCell key={0} className={classes.tableCell}>{a.payload.issuer}</TableCell>
-              <TableCell key={1} className={classes.tableCell}>{a.payload.owner}</TableCell>
+              <TableCell key={0} className={classes.tableCell}>{identify(a.payload.issuer)}</TableCell>
+              <TableCell key={1} className={classes.tableCell}>{identify(a.payload.owner)}</TableCell>
               <TableCell key={2} className={classes.tableCell}>{a.payload.name}</TableCell>
               <TableCell key={3} className={classes.tableCell}>{a.payload.value}</TableCell>
               <TableCell key={4} className={classes.tableCell}>{a.payload.dateOfAppraisal}</TableCell>

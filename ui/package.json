@@ -9,6 +9,7 @@
     "@daml/types": "1.2.0",
     "@material-ui/core": "^4.3.0",
     "@material-ui/icons": "^4.2.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/styles": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "react": "^16.12.0",

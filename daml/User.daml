@@ -1,0 +1,162 @@
+daml 1.2
+
+module User where
+
+-- Simple Party -> to UserName capabilities
+
+import qualified DA.Text as T
+import qualified DA.Next.Map as M
+
+{-
+  Helper Functions
+-}
+type UserNameMap = M.Map Text Party
+
+nextAvailable : Text -> Text
+nextAvailable s =
+  let rightNumbers = T.takeWhileEnd T.isDigit s
+      leftLetters = T.take (T.length s - T.length rightNumbers) s
+  in
+  case T.parseInt rightNumbers of
+    None    -> leftLetters <> "1"
+    Some n  -> leftLetters <> show (n + 1)
+
+removeCurrentName : Party -> UserNameMap -> UserNameMap
+removeCurrentName party = M.filter (/= party)
+
+addFreeUserName : Text -> Party -> UserNameMap -> (Text, UserNameMap)
+addFreeUserName userName party userNameMap =
+  if M.member userName userNameMap
+  then addFreeUserName (nextAvailable userName) party userNameMap
+  else (userName, M.insert userName party userNameMap )
+
+newSession : ContractId Aliases -> UserNameMap -> Text -> Party -> Party -> Update (ContractId Session, ContractId Aliases)
+newSession aliasesId currentUserNames userName user admin = do
+  let withoutCurrentParty = removeCurrentName user currentUserNames
+      (acceptedUserName, newUserNames) = addFreeUserName userName user withoutCurrentParty
+  newAliases <- exercise aliasesId New with newUserNames, ..
+  userSession <- create Session with userName = acceptedUserName, ..
+  return (userSession, newAliases)
+
+{-
+  Templates that describes the interaction.
+-}
+
+{- Each user/party has a Session that codifies an agreement between that
+   an administrator (of the ledger/business-application) and the user.
+
+   In instance the only business logic that is codified here is a userName,
+   that makes for a convenient way, as chosen by the user, and agreed upon
+   by the admin, to refer to the user.
+ -}
+template Session
+  with
+    admin : Party
+    user : Party
+    userName : Text
+  where
+    signatory admin, user
+
+    key (admin, user) : (Party, Party)
+    maintainer key._1
+
+    controller user can
+      Rename : ContractId SessionRequest
+        with
+          newUserName : Text
+        do
+          create SessionRequest with userName = newUserName, ..
+
+{- A user needs to request a Session via this contract. -}
+template SessionRequest
+  with
+    admin : Party
+    user : Party
+    userName : Text
+  where
+    signatory user
+    key user : Party
+    maintainer key
+
+    controller admin can
+      Acknowledge : (ContractId Session, ContractId Aliases)
+        with
+        do
+          (aliasesId, aliases) <- fetchByKey @Aliases admin
+          sessionOpt <- lookupByKey @Session (admin, user)
+          case sessionOpt of
+            Some sessionId -> do
+              session <- fetch sessionId
+              if session.userName == userName then
+                return (sessionId, aliasesId)
+              else do
+                archive sessionId
+                newSession aliasesId aliases.userNames userName user admin
+            None ->
+              do
+                newSession aliasesId aliases.userNames userName user admin
+
+{- Username assignments maintained by the admin but visible to all users. -}
+
+template Aliases
+  with
+    admin : Party
+    userNames : UserNameMap
+  where
+    signatory admin
+    observer map snd $ M.toList userNames
+
+    key admin : Party
+    maintainer key
+
+    controller admin can
+      New : ContractId Aliases
+        with
+          newUserNames : UserNameMap
+        do
+          create Aliases with userNames = newUserNames, ..
+
+-- Tests --
+
+testNextAvailable = scenario do
+  assert $ nextAvailable "" == "1"
+  assert $ nextAvailable "1" == "2"
+  assert $ nextAvailable "9" == "10"
+
+  assert $ nextAvailable "bob" == "bob1"
+  assert $ nextAvailable "bob1" == "bob2"
+  assert $ nextAvailable "bob9" == "bob10"
+
+testRequestsAndAliases = scenario do
+  alice <- getParty "alice"
+  bob <- getParty "bob"
+  admin <- getParty "admin"
+
+  aliases <-submit admin do create Aliases with userNames = M.empty, ..
+  let alicesDesiredUserName = "Alice"
+  alicesReq <- submit alice do
+                  create SessionRequest with
+                    admin
+                    user = alice
+                    userName = alicesDesiredUserName
+
+  (alicesSessionId, aliases) <- submit admin do exercise alicesReq Acknowledge
+  alicesSession <- submit alice do fetch alicesSessionId
+  assert $ alicesSession.userName == alicesDesiredUserName
+
+  bobsReq <- submit bob do
+                  create SessionRequest with
+                    admin
+                    user = bob
+                    userName = alicesDesiredUserName    -- tries to use the same
+
+  (bobsSessionId, aliases ) <- submit admin do exercise bobsReq Acknowledge
+  bobsSession <- submit bob do fetch bobsSessionId
+  assert $ bobsSession.userName /= alicesDesiredUserName
+
+  (_, alicesViewOfAliases) <- submit alice do fetchByKey @Aliases admin
+  assert $ M.lookup alicesDesiredUserName alicesViewOfAliases.userNames == Some alice
+
+  (_, bobsViewOfAliases) <- submit bob do fetchByKey @Aliases admin
+  assert $ M.lookup alicesDesiredUserName bobsViewOfAliases.userNames == Some alice
+  return ()

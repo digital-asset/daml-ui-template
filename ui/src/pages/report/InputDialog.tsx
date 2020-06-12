@@ -9,6 +9,7 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
+import AliasedTextfield from "../../components/AliasedTextfield/AliasedTextfield";
 
 export interface RegularField {
   label : string
@@ -21,7 +22,13 @@ export interface SelectionField {
   items : string[]
 }
 
-export type Field = RegularField | SelectionField
+export interface AliasedPartiesField {
+  label : string
+  type : "aliasedParties"
+  placeholder : string
+}
+
+export type Field = RegularField | SelectionField | AliasedPartiesField
 
 export interface InputDialogProps<T extends {[key: string]: any }> {
   open : boolean
@@ -34,36 +41,59 @@ export interface InputDialogProps<T extends {[key: string]: any }> {
 export function InputDialog<T extends { [key : string] : any }>(props : InputDialogProps<T>) {
   const [ state, setState ] = useState<T>(props.defaultValue);
 
-  function fieldsToInput([fieldName, field] : [string, Field], index : number) : JSX.Element {
-    if (field.type === "selection") {
-      return (
-        <FormControl key={index} fullWidth>
-          <InputLabel required>{field.label}</InputLabel>
-          <Select
-              value={state[fieldName]}
-              defaultValue={""}
-              onChange={e => setState({ ...state, [fieldName]: e.target.value })}>
-            {field.items.map(item => (<MenuItem key={item} value={item}>{item}</MenuItem>))}
-          </Select>
-        </FormControl>
-      )
-    } else {
-      return (
-        <TextField
-          required
-          autoFocus
-          fullWidth
-          key={index}
-          label={field.label}
-          type={field.type}
-          onChange={e => setState({ ...state, [fieldName]: e.target.value })}
-          InputLabelProps={{
-            shrink:true,
-            required:true,
-          }}
-          placeholder={(field.type==="date")?"YYYY-MM-DD":""}
-        />
-      )
+  const fieldsToInput = ([fieldName, field]:[string, Field], index:number) : JSX.Element => {
+    switch(field.type) {
+      case "selection":
+        return (
+          <FormControl key={index} fullWidth>
+            <InputLabel required>{field.label}</InputLabel>
+            <Select
+                value={state[fieldName]}
+                defaultValue={""}
+                onChange={e => setState({ ...state, [fieldName]: e.target.value })}>
+              {field.items.map(item => (<MenuItem key={item} value={item}>{item}</MenuItem>))}
+            </Select>
+          </FormControl>
+        )
+      case "aliasedParties":
+        return (
+          <AliasedTextfield
+            placeholder={field.placeholder}
+            onChange={e => {
+              if(e === null){
+                setState({ ...state, [fieldName]: e })}
+              }
+            }
+          />
+        )
+      case "date":
+        return (
+          <TextField
+            required
+            autoFocus
+            fullWidth
+            key={index}
+            label={field.label}
+            type={field.type}
+            onChange={e => setState({ ...state, [fieldName]: e.target.value })}
+            InputLabelProps={{ shrink:true, required:true }}
+            placeholder="YYYY-MM-DD"
+          />
+        )
+      case "text":
+      case "number":
+        return (
+          <TextField
+            required
+            autoFocus
+            fullWidth
+            key={index}
+            label={field.label}
+            type={field.type}
+            onChange={e => setState({ ...state, [fieldName]: e.target.value })}
+            InputLabelProps={{ required:true }}
+          />
+        )
     }
   }
   const fieldsAsArray : [string, Field][] = Object.entries(props.fields);
