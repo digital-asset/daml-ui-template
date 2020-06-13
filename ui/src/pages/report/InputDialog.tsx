@@ -10,47 +10,68 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
 
-export interface Selection {
+export interface RegularField {
+  label : string
+  type : "text" | "number" | "date"
+}
+
+export interface SelectionField {
+  label : string
+  type : "selection"
   items : string[]
 }
 
-export interface Field {
-  name : string
-  label : string
-  type : string | Selection
-}
+export type Field = RegularField | SelectionField
 
-export interface InputDialogProps {
+export interface InputDialogProps<T extends {[key: string]: any }> {
   open : boolean
   title : string
-  fields : Field[]
-  onClose : (state : any) => Promise<void>
+  defaultValue : T
+  fields : Record<keyof T, Field>
+  onClose : (state : T | null) => Promise<void>
 }
 
-export const InputDialog = (props : InputDialogProps) => {
-  const [ state, setState ] = useState<any>({});
+export function InputDialog<T extends { [key : string] : any }>(props : InputDialogProps<T>) {
+  const [ state, setState ] = useState<T>(props.defaultValue);
+
+  function fieldsToInput([fieldName, field] : [string, Field], index : number) : JSX.Element {
+    if (field.type === "selection") {
+      return (
+        <FormControl key={index} fullWidth>
+          <InputLabel>{field.label}</InputLabel>
+          <Select
+              value={state[fieldName]}
+              defaultValue={""}
+              onChange={e => setState({ ...state, [fieldName]: e.target.value })}>
+            {field.items.map(item => (<MenuItem key={item} value={item}>{item}</MenuItem>))}
+          </Select>
+        </FormControl>
+      )
+    } else {
+      return (
+        <TextField
+          required
+          autoFocus
+          fullWidth
+          key={index}
+          label={field.label}
+          type={field.type}
+          onChange={e => setState({ ...state, [fieldName]: e.target.value })} />
+      )
+    }
+  }
+  const fieldsAsArray : [string, Field][] = Object.entries(props.fields);
 
   return (
-    <Dialog open={props.open} onClose={() => props.onClose(undefined)} maxWidth="sm" fullWidth>
+    <Dialog open={props.open} onClose={() => props.onClose(null)} maxWidth="sm" fullWidth>
       <DialogTitle>
         {props.title}
       </DialogTitle>
       <DialogContent>
-        {props.fields.map((f, i) => {
-          if ((f.type as Selection).items) {
-            return (<FormControl key={i} fullWidth>
-              <InputLabel>{f.label}</InputLabel>
-              <Select value={state[f.name] || ""} defaultValue="" onChange={e => setState({ ...state, [f.name]: e.target.value })}>
-                {(f.type as Selection).items.map(item => (<MenuItem key={item} value={item}>{item}</MenuItem>))}
-              </Select>
-            </FormControl>)
-          } else {
-            return (<TextField required autoFocus fullWidth key={i} label={f.label} type={f.type as string} onChange={e => setState({ ...state, [f.name]: e.target.value })} />)
-          }
-        })}
+        {fieldsAsArray.map((value, index) => fieldsToInput(value, index))}
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => props.onClose(undefined)} color="primary">
+        <Button onClick={() => props.onClose(null)} color="primary">
           Cancel
         </Button>
         <Button onClick={() => props.onClose(state)} color="primary">
