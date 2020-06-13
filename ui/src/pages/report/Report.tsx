@@ -13,62 +13,55 @@ import useStyles from "./styles";
 
 export default function Report() {
   const classes = useStyles();
-
-  const defaultGive = { newOwner : "" };
-  const defaultGiveProps : InputDialogProps<Give> = {
-    open:false,
-    title: "Give Asset",
-    defaultValue:defaultGive,
-    fields : {
-      newOwner : {
-        label: "New Owner",
-        type: "selection",
-        items: [ "Alice", "Bob" ] } },
-    onClose: async () => {}
-  };
-
-  const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
-  const showGive = (asset : CreateEvent<Asset>) => {
-    const onClose = async (state : Give | null) => {
-      console.log(state);
-      setGiveProps({ ...defaultGiveProps, open:false});
-      if (!state) return;
-      await ledger.exercise(Asset.Give, asset.contractId, state);
-    }
-    setGiveProps({ ...defaultGiveProps, open: true, onClose})
-  };
-
-
-  type UserSpecifiedAppraise = Pick<Appraise, "newValue">
-  const newDateOfAppraisal = (new Date()).toISOString().slice(0,10);
-  const defaultUserSpecifiedAppraise = {
-    newValue : "0" };
-  const defaultAppraiseProps : InputDialogProps<UserSpecifiedAppraise> = {
-    open:false,
-    title: "Appraise Asset",
-    defaultValue:defaultUserSpecifiedAppraise,
-    fields : {
-      newValue : {
-        label: "New Value",
-        type: "number" }
-      },
-    onClose: async () => {}
-  };
-  const [ appraiseProps, setAppraiseProps ] = useState(defaultAppraiseProps);
-
   const party = useParty();
   const ledger = useLedger();
   const assets = useStreamQuery(Asset).contracts;
 
-  const showAppraise = (asset : CreateEvent<Asset>) => {
-    const onClose = async (state : UserSpecifiedAppraise | null) => {
-      console.log(state);
-      setAppraiseProps({ ...defaultAppraiseProps, open:false});
+  const defaultGiveProps : InputDialogProps<Give> = {
+    open: false,
+    title: "Give Asset",
+    defaultValue: { newOwner : "" },
+    fields: {
+      newOwner : {
+        label: "New Owner",
+        type: "selection",
+        items: [ "Alice", "Bob" ] } },
+    onClose: async function() {}
+  };
+
+  const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
+  function showGive(asset : CreateEvent<Asset>) {
+    async function onClose(state : Give | null) {
+      setGiveProps({ ...defaultGiveProps, open: false});
       if (!state) return;
-      let withNewDateOfAppraisal = { ...state, newDateOfAppraisal};
+      await ledger.exercise(Asset.Give, asset.contractId, state);
+    };
+    setGiveProps({ ...defaultGiveProps, open: true, onClose})
+  };
+
+  type UserSpecifiedAppraise = Pick<Appraise, "newValue">;
+  const newDateOfAppraisal = (new Date()).toISOString().slice(0,10);
+  const defaultAppraiseProps : InputDialogProps<UserSpecifiedAppraise> = {
+    open: false,
+    title: "Appraise Asset",
+    defaultValue: { newValue: "0" },
+    fields: {
+      newValue : {
+        label: "New Value",
+        type: "number" }
+      },
+    onClose: async function() {}
+  };
+  const [ appraiseProps, setAppraiseProps ] = useState(defaultAppraiseProps);
+
+  function showAppraise(asset : CreateEvent<Asset>) {
+    async function onClose(state : UserSpecifiedAppraise | null) {
+      setAppraiseProps({ ...defaultAppraiseProps, open: false});
+      if (!state) return;
+      const withNewDateOfAppraisal = { ...state, newDateOfAppraisal};
       await ledger.exercise(Asset.Appraise, asset.contractId, withNewDateOfAppraisal);
-    }
-    setAppraiseProps({...defaultAppraiseProps, open:true, onClose});
+    };
+    setAppraiseProps({...defaultAppraiseProps, open: true, onClose});
   };
 
   return (
@@ -95,11 +88,11 @@ export default function Report() {
               <TableCell key={2} className={classes.tableCell}>{a.payload.name}</TableCell>
               <TableCell key={3} className={classes.tableCell}>{a.payload.value}</TableCell>
               <TableCell key={4} className={classes.tableCell}>{a.payload.dateOfAppraisal}</TableCell>
-              <TableCell key={5} className={classes.tableCell}>
-                <Button color="primary" size="small" className="px-2" variant="contained" disabled={a.payload.owner !== party} onClick={() => showGive(a)}>Give</Button>
+              <TableCell key={5} className={classes.tableCellButton}>
+                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.owner !== party} onClick={() => showGive(a)}>Give</Button>
               </TableCell>
-              <TableCell key={6} className={classes.tableCell}>
-                <Button color="primary" size="small" className="px-2" variant="contained" disabled={a.payload.issuer !== party} onClick={() => showAppraise(a)}>Appraise</Button>
+              <TableCell key={6} className={classes.tableCellButton}>
+                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.issuer !== party} onClick={() => showAppraise(a)}>Appraise</Button>
               </TableCell>
             </TableRow>
           ))}

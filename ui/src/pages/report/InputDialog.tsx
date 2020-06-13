@@ -31,11 +31,11 @@ export interface InputDialogProps<T extends {[key: string]: any }> {
   onClose : (state : T | null) => Promise<void>
 }
 
-export const InputDialog = <T extends {[key:string]:any}>(props : InputDialogProps<T>) => {
+export function InputDialog<T extends { [key : string] : any }>(props : InputDialogProps<T>) {
   const [ state, setState ] = useState<T>(props.defaultValue);
 
-  const fieldsToInput = ([fieldName, field]:[string, Field], index:number) : JSX.Element => {
-    if(field.type === "selection"){
+  function fieldsToInput([fieldName, field] : [string, Field], index : number) : JSX.Element {
+    if (field.type === "selection") {
       return (
         <FormControl key={index} fullWidth>
           <InputLabel>{field.label}</InputLabel>
@@ -60,7 +60,7 @@ export const InputDialog = <T extends {[key:string]:any}>(props : InputDialogPro
       )
     }
   }
-  let fieldsAsArray : [string,Field][] = Object.entries(props.fields);
+  const fieldsAsArray : [string, Field][] = Object.entries(props.fields);
 
   return (
     <Dialog open={props.open} onClose={() => props.onClose(null)} maxWidth="sm" fullWidth>
