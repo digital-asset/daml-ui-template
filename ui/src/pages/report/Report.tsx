@@ -40,7 +40,7 @@ export default function Report() {
   };
 
   type UserSpecifiedAppraise = Pick<Appraise, "newValue">;
-  const newDateOfAppraisal = (new Date()).toISOString().slice(0,10);
+  const today = (new Date()).toISOString().slice(0,10);
   const defaultAppraiseProps : InputDialogProps<UserSpecifiedAppraise> = {
     open: false,
     title: "Appraise Asset",
@@ -58,16 +58,62 @@ export default function Report() {
     async function onClose(state : UserSpecifiedAppraise | null) {
       setAppraiseProps({ ...defaultAppraiseProps, open: false});
       if (!state) return;
-      const withNewDateOfAppraisal = { ...state, newDateOfAppraisal};
+      const withNewDateOfAppraisal = { ...state, newDateOfAppraisal:today};
       await ledger.exercise(Asset.Appraise, asset.contractId, withNewDateOfAppraisal);
     };
     setAppraiseProps({...defaultAppraiseProps, open: true, onClose});
+  };
+
+  type InputFieldsForNewAsset = Omit<Asset, "issuer">;
+  const defaultNewAssetProps : InputDialogProps<InputFieldsForNewAsset> = {
+    open: false,
+    title: "New Asset",
+    defaultValue: {
+      owner: party,
+      name: "",
+      dateOfAppraisal: today,
+      value: "0",
+    },
+    fields: {
+      owner: {
+        label: "Owner",
+        type: "selection",
+        items: [ "Alice", "Bob" ],
+      },
+      name: {
+        label: "Name of Asset",
+        type: "text"
+      },
+      dateOfAppraisal: {
+        label: "Date of Appraisal",
+        type: "date"
+      },
+      value: {
+        label: "Value",
+        type: "number"
+      }
+    },
+    onClose: async function() {}
+  };
+  const [newAssetProps, setNewAssetProps] = useState(defaultNewAssetProps);
+  function showNewAsset() {
+    async function onClose(state : InputFieldsForNewAsset | null) {
+      setNewAssetProps({ ...defaultNewAssetProps, open: false});
+      if (!state) return;
+      const withIssuer = { ...state, issuer:party};
+      await ledger.create(Asset, withIssuer);
+    };
+    setNewAssetProps({...defaultNewAssetProps, open: true, onClose});
   };
 
   return (
     <>
       <InputDialog { ...giveProps } />
       <InputDialog { ...appraiseProps } />
+      <InputDialog { ...newAssetProps } />
+      <Button color="primary" size="small" className={classes.choiceButton} variant="contained" onClick={() => showNewAsset()}>
+        Create New Asset
+      </Button>
       <Table size="small">
         <TableHead>
           <TableRow className={classes.tableRow}>
