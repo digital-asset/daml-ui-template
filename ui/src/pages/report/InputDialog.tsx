@@ -61,6 +61,7 @@ export function InputDialog<T extends { [key : string] : any }>(props : InputDia
             shrink:true,
             required:true,
           }}
+          placeholder={(field.type==="date")?"YYYY-MM-DD":""}
         />
       )
     }
