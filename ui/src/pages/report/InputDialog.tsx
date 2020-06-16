@@ -60,7 +60,7 @@ export function InputDialog<T extends { [key : string] : any }>(props : InputDia
           <AliasedTextfield
             placeholder={field.placeholder}
             onChange={e => {
-              if(e === null){
+              if(e !== null){
                 setState({ ...state, [fieldName]: e })}
               }
             }

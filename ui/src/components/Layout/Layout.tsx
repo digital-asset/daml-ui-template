@@ -5,7 +5,8 @@ import Header from "../Header/Header";
 import Sidebar from "../Sidebar/Sidebar";
 import Report from "../../pages/report/Report";
 import Session from "../../pages/session/Session";
-import { CompleteWithinLedgerLogin, useUserState } from "../../context/UserContext";
+import { useUserState } from "../../context/UserContext";
+import { SessionProvider } from "../../context/SessionContext";
 import { AliasesContextProvider } from "../../context/AliasesContext";
 import { wsBaseUrl, httpBaseUrl } from "../../config";
 import useStyles from "./styles";
@@ -19,7 +20,7 @@ const Layout = () => {
   } else {
     return (
       <DamlLedger party={user.party} token={user.token} httpBaseUrl={httpBaseUrl} wsBaseUrl={wsBaseUrl}>
-        <CompleteWithinLedgerLogin>
+        <SessionProvider>
           <AliasesContextProvider>
             <div className={classes.root}>
                 <>
@@ -35,7 +36,7 @@ const Layout = () => {
                 </>
             </div>
           </AliasesContextProvider>
-        </CompleteWithinLedgerLogin>
+        </SessionProvider>
       </DamlLedger>
     );
   }

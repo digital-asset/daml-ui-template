@@ -28,7 +28,7 @@ export default function App() {
 
   function RootRoute() {
     var userDispatch = useUserDispatch();
-  
+
     useEffect(() => {
       const url = new URL(window.location.toString());
       const token = url.searchParams.get('token');
@@ -41,15 +41,15 @@ export default function App() {
       }
       localStorage.setItem("daml.party", party);
       localStorage.setItem("daml.token", token);
-  
+
       userDispatch({ type: "LOGIN_SUCCESS", token, party });
     })
-  
+
     return (
       <Redirect to="/app/report" />
     )
   }
-  
+
   function PrivateRoute({ component, ...rest } : any) {
     return (
       <Route

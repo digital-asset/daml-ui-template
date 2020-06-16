@@ -2,22 +2,22 @@ import React, { useState } from "react";
 import { useLedger } from "@daml/react";
 import { User } from "@daml.js/daml-ui-template-0.0.1";
 import { Grid, Typography, TextField, Button } from "@material-ui/core";
-import { useUserState } from "../../context/UserContext";
+import { useSessionState } from "../../context/SessionContext";
 
 export default function Session() {
 
   const ledger = useLedger();
-  const userState = useUserState()
-  const defaultUserName = userState.type === "AuthenticatedWithSession"
-                        ? userState.session.payload.userName
+  const sessionState = useSessionState();
+  const defaultUserName = (sessionState.type === "With")
+                        ? sessionState.session.payload.userName
                         : "";
-  console.log(`Sessions is ${JSON.stringify(userState)}`);
+  console.log(`Sessions is ${JSON.stringify(sessionState)}`);
   const [userName, setUserName] = useState<string>(defaultUserName);
-  if(userState.type !== "AuthenticatedWithSession"){
+  if(sessionState.type !== "With"){
     return null;
   }
 
-  const session = userState.session;
+  const session = sessionState.session;
   async function rename(){
     let res = await ledger.exercise( User.Session.Rename, session.contractId, { newUserName:userName } );
     console.log(`Asked to rename: ${JSON.stringify(res)}!`);

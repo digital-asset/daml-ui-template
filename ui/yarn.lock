@@ -1127,6 +1127,20 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
+"@daml.js/2e496c511afa01bee46a954470a0d8433a28dcce7afa1cfaaabb92604a64c542@file:../daml.js/2e496c511afa01bee46a954470a0d8433a28dcce7afa1cfaaabb92604a64c542":
+  version "1.2.0"
+  dependencies:
+    "@daml/ledger" "1.2.0"
+    "@daml/types" "1.2.0"
+    "@mojotech/json-type-validation" "^3.1.0"
+
+"@daml.js/40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7@file:../daml.js/40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7":
+  version "1.2.0"
+  dependencies:
+    "@daml/ledger" "1.2.0"
+    "@daml/types" "1.2.0"
+    "@mojotech/json-type-validation" "^3.1.0"
+
 "@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662@file:../daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662":
   version "1.2.0"
   dependencies:
@@ -1137,7 +1151,9 @@
 "@daml.js/daml-ui-template-0.0.1@file:../daml.js/daml-ui-template-0.0.1":
   version "1.2.0"
   dependencies:
-    "@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662" "file:../../../Library/Caches/Yarn/v6/npm-@daml-js-daml-ui-template-0-0-1-1.2.0-824d170d-4c97-40f4-8394-bfca377187b8-1592235178515/node_modules/@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662"
+    "@daml.js/2e496c511afa01bee46a954470a0d8433a28dcce7afa1cfaaabb92604a64c542" "file:../../../../../../Library/Caches/Yarn/v6/npm-@daml-js-daml-ui-template-0-0-1-1.2.0-d4b90671-729c-4249-9b78-c7ab1d9f5b17-1592272640210/node_modules/@daml.js/2e496c511afa01bee46a954470a0d8433a28dcce7afa1cfaaabb92604a64c542"
+    "@daml.js/40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7" "file:../../../../../../Library/Caches/Yarn/v6/npm-@daml-js-daml-ui-template-0-0-1-1.2.0-d4b90671-729c-4249-9b78-c7ab1d9f5b17-1592272640210/node_modules/@daml.js/40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7"
+    "@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662" "file:../../../../../../Library/Caches/Yarn/v6/npm-@daml-js-daml-ui-template-0-0-1-1.2.0-d4b90671-729c-4249-9b78-c7ab1d9f5b17-1592272640210/node_modules/@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662"
     "@daml/ledger" "1.2.0"
     "@daml/types" "1.2.0"
     "@mojotech/json-type-validation" "^3.1.0"
@@ -1154,19 +1170,38 @@
     isomorphic-ws "^4.0.1"
     ws "^7.2.1"
 
-"@daml/react@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@daml/react/-/react-1.2.0.tgz#ec5bc61d9efa5471add447d4933f1c39da953a9b"
-  integrity sha512-3UzWDVHlTTTuhh3tntLJg27+rCYTsyhcJAlfJ7SczLLviLdDY2RF1+RzwyvbRVJKCGNuJkCGCrti6su0kFC/zg==
+"@daml/ledger@1.3.0-snapshot.20200610.4412.0.0544323d":
+  version "1.3.0-snapshot.20200610.4412.0.0544323d"
+  resolved "https://registry.yarnpkg.com/@daml/ledger/-/ledger-1.3.0-snapshot.20200610.4412.0.0544323d.tgz#1b486c4e26fe5778612801a5ff03c034dfc7e4f7"
+  integrity sha512-m09LkfHKXcIEa6heb7V7E0JZz5wR0NBEZAl/BcYx2kQ7t0FgbGQgzu0gckBznq4clY++dzA4nG8hmw2o8kupTA==
   dependencies:
-    "@daml/ledger" "1.2.0"
-    "@daml/types" "1.2.0"
+    "@daml/types" "1.3.0-snapshot.20200610.4412.0.0544323d"
+    "@mojotech/json-type-validation" "^3.1.0"
+    cross-fetch "^3.0.4"
+    events "^3.1.0"
+    isomorphic-ws "^4.0.1"
+    ws "^7.2.1"
+
+"@daml/react@1.3.0-snapshot.20200610.4412.0.0544323d":
+  version "1.3.0-snapshot.20200610.4412.0.0544323d"
+  resolved "https://registry.yarnpkg.com/@daml/react/-/react-1.3.0-snapshot.20200610.4412.0.0544323d.tgz#e3408332ac2b01b7040d727babada504288c46af"
+  integrity sha512-aR9fRcTwFWhJUjtF3RLxk6IQm2Jez7TGFB4Yp2iqCKBK203eEazgiiNDem+eL0dYN6P2hdu/mGdnYi0NZCPSDw==
+  dependencies:
+    "@daml/ledger" "1.3.0-snapshot.20200610.4412.0.0544323d"
+    "@daml/types" "1.3.0-snapshot.20200610.4412.0.0544323d"
     react "^16.12.0"
 
 "@daml/types@1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@daml/types/-/types-1.2.0.tgz#2fb5e1b83db42310c35c53d97213b1cadbed0f90"
   integrity sha512-gZwcEsTDy1eCTgslu59ovfV6C4eDzjmkg+iKzVRP8rNwnN49JdTHDBQ15i9yPj8BISGHq/nHThl6eAbcRFhD8Q==
+  dependencies:
+    "@mojotech/json-type-validation" "^3.1.0"
+
+"@daml/types@1.3.0-snapshot.20200610.4412.0.0544323d":
+  version "1.3.0-snapshot.20200610.4412.0.0544323d"
+  resolved "https://registry.yarnpkg.com/@daml/types/-/types-1.3.0-snapshot.20200610.4412.0.0544323d.tgz#e46d75d183043fc55512f195e9217c4156680397"
+  integrity sha512-8I2t1n8NbBNpZq+uLj1lqqzz2P+8QiZJznw+J4lU+8d+3hQS8aNpvCSwZ+IJPeLP5lK8hDAaBF29kY9+agqyhw==
   dependencies:
     "@mojotech/json-type-validation" "^3.1.0"
 
@@ -1379,6 +1414,17 @@
   integrity sha512-GBitL3oBWO0hzBhvA9KxqcowRUsA0qzwKkURyC8nppnC3fw54KPKZ+d4V1Eeg/UnDRSzDaI9nGCdel/eh9AQMg==
   dependencies:
     "@babel/runtime" "^7.4.4"
+
+"@material-ui/lab@^4.0.0-alpha.56":
+  version "4.0.0-alpha.56"
+  resolved "https://registry.yarnpkg.com/@material-ui/lab/-/lab-4.0.0-alpha.56.tgz#ff63080949b55b40625e056bbda05e130d216d34"
+  integrity sha512-xPlkK+z/6y/24ka4gVJgwPfoCF4RCh8dXb1BNE7MtF9bXEBLN/lBxNTK8VAa0qm3V2oinA6xtUIdcRh0aeRtVw==
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+    "@material-ui/utils" "^4.10.2"
+    clsx "^1.0.4"
+    prop-types "^15.7.2"
+    react-is "^16.8.0"
 
 "@material-ui/styles@^4.10.0", "@material-ui/styles@^4.3.0":
   version "4.10.0"
