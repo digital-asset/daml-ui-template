@@ -38,7 +38,7 @@ export function InputDialog<T extends { [key : string] : any }>(props : InputDia
     if (field.type === "selection") {
       return (
         <FormControl key={index} fullWidth>
-          <InputLabel>{field.label}</InputLabel>
+          <InputLabel required>{field.label}</InputLabel>
           <Select
               value={state[fieldName]}
               defaultValue={""}
@@ -56,7 +56,13 @@ export function InputDialog<T extends { [key : string] : any }>(props : InputDia
           key={index}
           label={field.label}
           type={field.type}
-          onChange={e => setState({ ...state, [fieldName]: e.target.value })} />
+          onChange={e => setState({ ...state, [fieldName]: e.target.value })}
+          InputLabelProps={{
+            shrink:true,
+            required:true,
+          }}
+          placeholder={(field.type==="date")?"YYYY-MM-DD":""}
+        />
       )
     }
   }
