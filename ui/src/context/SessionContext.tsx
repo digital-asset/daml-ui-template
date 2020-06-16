@@ -48,10 +48,6 @@ export const SessionProvider : React.FC = ({children}) => {
   const sessions = useStreamQuery(User.Session);
   const user = useUserState();
   useEffect(() => {
-    console.log(`----------
-      state ${JSON.stringify(state)}
-      sessions ${JSON.stringify(sessions)}
-      wellKnownParties ${JSON.stringify(wellKnownParties)}`);
     async function requestSession(userAdminParty:string, party:string, token:string){
       let userName = isLocalDev ? partyNameFromLocalJwtToken(token) : partyNameFromJwtToken(token);
       let sessionRequest = await ledger.create( User.SessionRequest

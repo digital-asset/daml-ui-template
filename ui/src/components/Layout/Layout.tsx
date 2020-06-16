@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, withRouter } from "react-router-dom";
+import { Redirect, Route, Switch, withRouter } from "react-router-dom";
 import DamlLedger from "@daml/react";
 import Header from "../Header/Header";
 import Sidebar from "../Sidebar/Sidebar";
@@ -31,6 +31,8 @@ const Layout = () => {
                     <Switch>
                       <Route path="/app/report" component={Report} />
                       <Route path="/app/session" component={Session} />
+                      {/* List this last to always redirect to Report instead of failing. */}
+                      <Redirect to="/app/report"></Redirect>
                     </Switch>
                   </div>
                 </>
