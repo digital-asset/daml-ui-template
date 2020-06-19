@@ -50,12 +50,41 @@ function localExpiredToken(token:string):boolean{
   return isLocalDev ? false : expiredToken(token);
 }
 
-const UserProvider : React.FC = ({ children }) => {
-  const party = localStorage.getItem("daml.party")
-  const token = localStorage.getItem("daml.token")
+type StoredUserInfo = {
+  party : string
+  token : string
+}
 
-  let initState : UserState = (!!party && !!token && !localExpiredToken(token))
-                            ? { isAuthenticated : true, token, party }
+function fromLocalStorage() : StoredUserInfo | null{
+  const party = localStorage.getItem("daml.party");
+  const token = localStorage.getItem("daml.token");
+  if(party === null || token === null || localExpiredToken(token)) {
+    localStorage.removeItem("daml.party");
+    localStorage.removeItem("daml.token");
+    return null;
+  } else {
+    return {party, token};
+  }
+}
+
+function fromURL() : StoredUserInfo | null {
+  const url = new URL(window.location.toString());
+  const token = url.searchParams.get('token');
+  const party = url.searchParams.get('party');
+  if (token === null || localExpiredToken(token)) {
+    return null;
+  }
+  if (party === null) {
+    throw Error("When 'token' is passed via URL, 'party' must be passed too.");
+  }
+  return {party, token};
+}
+
+const UserProvider : React.FC = ({ children }) => {
+
+  let userInfo = fromLocalStorage();
+  let initState : UserState = (userInfo !== null)
+                            ? { isAuthenticated : true, ...userInfo }
                             : { isAuthenticated : false };
   var [state, dispatch] = React.useReducer<React.Reducer<UserState,LoginAction>>(userReducer, initState);
   const defaultWkp = isLocalDev ? {userAdminParty:"UserAdmin", publicParty:"UserAdmin"} : undefined;
@@ -128,4 +157,4 @@ function signOut(dispatch : React.Dispatch<LoginAction>, history : History) {
   history.push("/login");
 }
 
-export { UserProvider, useUserState, useUserDispatch, loginUser, loginDablUser, signOut };
+export { fromLocalStorage, fromURL, UserProvider, useUserState, useUserDispatch, loginUser, loginDablUser, signOut };

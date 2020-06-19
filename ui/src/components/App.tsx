@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
-import { useUserState, useUserDispatch } from "../context/UserContext";
+import { fromLocalStorage, fromURL, useUserState, useUserDispatch } from "../context/UserContext";
 import Layout from "./Layout/Layout";
 import ErrorComponent from "../pages/error/Error";
 import Login from "../pages/login/Login";
@@ -26,19 +26,13 @@ export default function App() {
 
     useEffect(() => {
       if(!userState.isAuthenticated){
-        const url = new URL(window.location.toString());
-        const token = url.searchParams.get('token');
-        if (token === null) {
-          return;
-        }
-        const party = url.searchParams.get('party');
-        if (party === null) {
-          throw Error("When 'token' is passed via URL, 'party' must be passed too.");
-        }
-        localStorage.setItem("daml.party", party);
-        localStorage.setItem("daml.token", token);
+        const userInfo = fromLocalStorage() || fromURL();
+        if(userInfo !== null){
+          localStorage.setItem("daml.party", userInfo.party);
+          localStorage.setItem("daml.token", userInfo.token);
 
-        userDispatch({ type: "LOGIN_SUCCESS", token, party });
+          userDispatch({ type: "LOGIN_SUCCESS", ...userInfo});
+        }
       }
       // only depends on userDispatch
       // eslint-disable-next-line
