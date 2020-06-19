@@ -1,7 +1,7 @@
 build:
 	daml build
 	daml codegen js -o daml.js .daml/dist/*.dar
-	cd ui && yarn install --force --frozen-lockfile && yarn link "@daml/dabl-react"
+	cd ui && yarn install --force --frozen-lockfile
 	cd ui && yarn build
 	cd operator_bot && poetry build
 
