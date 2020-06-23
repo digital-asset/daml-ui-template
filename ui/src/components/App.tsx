@@ -4,6 +4,7 @@ import { fromLocalStorage, fromURL, useUserState, useUserDispatch } from "../con
 import Layout from "./Layout/Layout";
 import ErrorComponent from "../pages/error/Error";
 import Login from "../pages/login/Login";
+import Users from "../pages/users/Users";
 
 export default function App() {
   const userState = useUserState();
@@ -14,6 +15,7 @@ export default function App() {
         <PrivateRoute exact path="/"      component={Layout} />
         <PrivateRoute       path="/app"   component={Layout} />
         <PublicRoute  exact path="/login" component={Login} />
+        <Route        exact path="/users" component={Users} />
         <Route component={ErrorComponent} />
       </Switch>
     </HashRouter>

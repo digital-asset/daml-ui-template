@@ -34,3 +34,5 @@ let loginUrl = host.slice(1)
 loginUrl.unshift('login')
 
 export const dablLoginUrl = loginUrl.join('.') + (window.location.port ? ':' + window.location.port : '') + '/auth/login?ledgerId=' + ledgerId;
+
+export const defaultPublicToken = isLocalDev ? createToken('Public') : undefined;

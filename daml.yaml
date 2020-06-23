@@ -4,6 +4,8 @@ source: daml
 parties:
   - Alice
   - Bob
+  - Ref
+  - Public
 version: 0.0.1
 init-script: Main:setup
 start-navigator: false

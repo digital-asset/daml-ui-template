@@ -1,7 +1,7 @@
 import React from "react";
 import { History } from 'history';
 import { createToken, dablLoginUrl } from "../config";
-import { expiredToken, WellKnownPartiesProvider } from "@daml/dabl-react";
+import { expiredToken } from "@daml/dabl-react";
 import { isLocalDev } from "../config"
 
 type AuthenticatedUser = {
@@ -87,14 +87,11 @@ const UserProvider : React.FC = ({ children }) => {
                             ? { isAuthenticated : true, ...userInfo }
                             : { isAuthenticated : false };
   var [state, dispatch] = React.useReducer<React.Reducer<UserState,LoginAction>>(userReducer, initState);
-  const defaultWkp = isLocalDev ? {userAdminParty:"UserAdmin", publicParty:"UserAdmin"} : undefined;
 
   return (
     <UserStateContext.Provider value={state}>
       <UserDispatchContext.Provider value={dispatch}>
-        <WellKnownPartiesProvider defaultWkp={defaultWkp}>
-          {children}
-        </WellKnownPartiesProvider>
+        {children}
       </UserDispatchContext.Provider>
     </UserStateContext.Provider>
   );

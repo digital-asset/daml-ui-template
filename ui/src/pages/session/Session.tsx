@@ -9,7 +9,7 @@ export default function Session() {
   const ledger = useLedger();
   const sessionState = useSessionState();
   const defaultUserName = (sessionState.type === "With")
-                        ? sessionState.session.payload.userName
+                        ? sessionState.session.payload.common.userName
                         : "";
   console.log(`Sessions is ${JSON.stringify(sessionState)}`);
   const [userName, setUserName] = useState<string>(defaultUserName);
@@ -27,13 +27,13 @@ export default function Session() {
     <Grid container>
     <Grid item xs={12} style={{ paddingBottom: "30px" }}><Typography variant="h2">Session Information</Typography></Grid>
     <Grid item xs={3} style={{ padding: "10px" }}><Typography>Admin Party</Typography></Grid>
-    <Grid item xs={3} style={{ padding: "10px" }}><Typography>{session.payload.admin}</Typography></Grid>
+    <Grid item xs={3} style={{ padding: "10px" }}><Typography>{session.payload.common.admin}</Typography></Grid>
     <Grid item xs={6}></Grid>
     <Grid item xs={3} style={{ padding: "10px" }}><Typography>User Party</Typography></Grid>
-    <Grid item xs={3} style={{ padding: "10px" }}><Typography>{session.payload.user}</Typography></Grid>
+    <Grid item xs={3} style={{ padding: "10px" }}><Typography>{session.payload.common.user}</Typography></Grid>
     <Grid item xs={6}></Grid>
     <Grid item xs={3} style={{ padding: "10px" }}><Typography>User Name</Typography></Grid>
-    <Grid item xs={3} style={{ padding: "10px" }}><TextField onChange={e => setUserName(e.target.value)} defaultValue={userName} /></Grid>
+    <Grid item xs={3} style={{ padding: "10px" }}><TextField onChange={e => setUserName(e.target.value)} value={userName} /></Grid>
     <Grid item xs={3} style={{ padding: "10px" }}><Button color="primary" variant="contained" onClick={rename}>Update Your User Name</Button></Grid>
   </Grid>
   );

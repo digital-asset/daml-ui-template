@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { useStreamFetchByKey } from "@daml/react";
-import { useWellKnownParties } from "@daml/dabl-react";
+import { useStreamQueryAsPublic } from "@daml/dabl-react";
 import { User } from "@daml.js/daml-ui-template-0.0.1";
 
 export type AliasRecord = {
@@ -8,6 +7,9 @@ export type AliasRecord = {
   partyId : string
 }
 
+function commonToAliasRecord(common : User.Common ) : AliasRecord {
+  return {alias : common.userName, partyId: common.user};
+}
 export type AliasMap = Record<string,string>
 
 const AliasesContext = React.createContext<[AliasRecord[], AliasMap]>([[],{}]);
@@ -16,22 +18,17 @@ export function AliasesContextProvider({children}:{children:React.ReactNode}){
 
   const [aliases, setAliases] = useState<AliasRecord[]>([]);
   const [aliasMap, setAliasMap] = useState<AliasMap>({});
-  const wellKnownParties = useWellKnownParties();
-  const aliasesQuery = useStreamFetchByKey( User.Aliases
-                                          , () => wellKnownParties.userAdminParty
-                                          , [wellKnownParties.userAdminParty]);
+  const usernamesQuery = useStreamQueryAsPublic( User.UserName );
 
   useEffect(() => {
-    console.log(`aliasesQuery ${JSON.stringify(aliasesQuery)}`);
-    if(!aliasesQuery.loading && !!aliasesQuery.contract){
-      let recordObj : Record<string,string> = aliasesQuery.contract.payload.userNames.textMap ?? {};
-      let records = Object.entries(recordObj).map(([alias,partyId])=>({alias,partyId}));
+    console.log(`usernamesQuery ${JSON.stringify(usernamesQuery)}`);
+    if(!usernamesQuery.loading && !!usernamesQuery.contracts){
+      let records = usernamesQuery.contracts.map(contract => commonToAliasRecord(contract.payload.common));
       setAliases(records);
-      let reversed = Object.entries(recordObj).map(([alias,partyId])=>[partyId,alias]);
-      let aliasMap = Object.fromEntries(reversed);
+      let aliasMap = Object.fromEntries( records.map(({alias, partyId}) => [partyId, alias]) );
       setAliasMap(aliasMap);
     }
-  }, [aliasesQuery]);
+  }, [usernamesQuery]);
 
   return (
     <AliasesContext.Provider value={[aliases, aliasMap]}>

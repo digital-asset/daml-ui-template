@@ -48,13 +48,14 @@ export const SessionProvider : React.FC = ({children}) => {
   const sessions = useStreamQuery(User.Session);
   const user = useUserState();
   useEffect(() => {
-    async function requestSession(userAdminParty:string, party:string, token:string){
+    async function requestSession(party:string, token:string){
       let userName = isLocalDev ? partyNameFromLocalJwtToken(token) : partyNameFromJwtToken(token);
       let sessionRequest = await ledger.create( User.SessionRequest
-                                              , { admin: userAdminParty
-                                                , user: party
-                                                , userName
-                                                });
+                                              , { common: { admin: wellKnownParties.userAdminParty
+                                                          , public: wellKnownParties.publicParty
+                                                          , user: party
+                                                          , userName
+                                                          }});
       console.log(`Session request: ${JSON.stringify(sessionRequest)}`);
     }
     if(wellKnownParties !== null && user.isAuthenticated && !sessions.loading){
@@ -65,7 +66,7 @@ export const SessionProvider : React.FC = ({children}) => {
           } else if(state.requested) {
             console.log(`Requested but did not receive a Session!`);
           } else {
-            requestSession(wellKnownParties.userAdminParty, user.party, user.token);
+            requestSession(user.party, user.token);
             dispatch({ type:"REQUEST" });
           }
           break;

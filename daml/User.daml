@@ -21,100 +21,105 @@ nextAvailable s =
     None    -> leftLetters <> "1"
     Some n  -> leftLetters <> show (n + 1)
 
-removeCurrentName : Party -> UserNameMap -> UserNameMap
-removeCurrentName party = M.filter (/= party)
+data Common = Common with
+  admin : Party
+  public : Party
+  user : Party
+  userName : Text
+    deriving (Eq, Show)
 
-addFreeUserName : Text -> Party -> UserNameMap -> (Text, UserNameMap)
-addFreeUserName userName party userNameMap =
-  if M.member userName userNameMap
-  then addFreeUserName (nextAvailable userName) party userNameMap
-  else (userName, M.insert userName party userNameMap )
+freeUserName : Int -> Common -> Update (ContractId Session)
+freeUserName numberOfRenames common = do
+  userNameOpt <- lookupByKey @UserName (common.admin, common.userName)
+  case userNameOpt of
+    None -> do
+      userNameId <- create UserName with common
+      create Session with common, ..
+    Some _userNameId -> do
+      freeUserName numberOfRenames (common with userName = nextAvailable common.userName)
 
-newSession : ContractId Aliases -> UserNameMap -> Text -> Party -> Party -> Update (ContractId Session, ContractId Aliases)
-newSession aliasesId currentUserNames userName user admin = do
-  let withoutCurrentParty = removeCurrentName user currentUserNames
-      (acceptedUserName, newUserNames) = addFreeUserName userName user withoutCurrentParty
-  newAliases <- exercise aliasesId New with newUserNames, ..
-  userSession <- create Session with userName = acceptedUserName, ..
-  return (userSession, newAliases)
+nextAvailableSession : Int -> Common -> Update (ContractId Session)
+nextAvailableSession numberOfRenames common = do
+  currentSessionOpt <- lookupByKey @Session (common.admin, common.user)
+  case currentSessionOpt of
+    Some sessionId -> do return sessionId    -- No renames by creating new Session Requests!
+    None -> do freeUserName numberOfRenames common
 
 {-
   Templates that describes the interaction.
 -}
 
 {- Each user/party has a Session that codifies an agreement between that
-   an administrator (of the ledger/business-application) and the user.
+   user/party and an administrator (of the ledger/business-application).
 
-   In instance the only business logic that is codified here is a userName,
-   that makes for a convenient way, as chosen by the user, and agreed upon
-   by the admin, to refer to the user.
+   In this instance there are two pieces of business logic that is codified:
+    1. A public userName, that makes for a convenient way, as chosen/suggested
+      by the user, and agreed upon by the admin, to refer to the user.
+      This information is made public by having the `public` party be an observer
+      on the `UserName` contract.
+    2. A private number of renames count. This information is stored only in the
+       Session contract.
  -}
 template Session
   with
-    admin : Party
-    user : Party
-    userName : Text
+    common : Common
+    userNameId : ContractId UserName
+    numberOfRenames : Int
   where
-    signatory admin, user
+    signatory common.admin, common.user
 
-    key (admin, user) : (Party, Party)
+    key (common.admin, common.user) : (Party, Party)
     maintainer key._1
 
-    controller user can
-      Rename : ContractId SessionRequest
+    controller common.user can
+      Rename : ContractId SessionRenameRequest
         with
           newUserName : Text
         do
-          create SessionRequest with userName = newUserName, ..
+          assert $ newUserName /= common.userName
+          archive userNameId
+          create SessionRenameRequest with
+                    numberOfRenames = numberOfRenames + 1
+                    common = common with userName = newUserName
 
-{- A user needs to request a Session via this contract. -}
+-- A user needs to request a Session via this contract.
 template SessionRequest
   with
-    admin : Party
-    user : Party
-    userName : Text
+    common : Common
   where
-    signatory user
-    key user : Party
+    signatory common.user
+    key common.user : Party
     maintainer key
 
-    controller admin can
-      Acknowledge : (ContractId Session, ContractId Aliases)
-        with
+    controller common.admin can
+      Acknowledge : ContractId Session
         do
-          (aliasesId, aliases) <- fetchByKey @Aliases admin
-          sessionOpt <- lookupByKey @Session (admin, user)
-          case sessionOpt of
-            Some sessionId -> do
-              session <- fetch sessionId
-              if session.userName == userName then
-                return (sessionId, aliasesId)
-              else do
-                archive sessionId
-                newSession aliasesId aliases.userNames userName user admin
-            None ->
-              do
-                newSession aliasesId aliases.userNames userName user admin
+          nextAvailableSession 0 common
 
-{- Username assignments maintained by the admin but visible to all users. -}
-
-template Aliases
+-- A user can only ask for a rename if they already have a session.
+template SessionRenameRequest
   with
-    admin : Party
-    userNames : UserNameMap
+    common : Common
+    numberOfRenames : Int
   where
-    signatory admin
-    observer map snd $ M.toList userNames
-
-    key admin : Party
+    signatory common.user, common.admin           -- A user can't create this request
+    key common.user : Party
     maintainer key
 
-    controller admin can
-      New : ContractId Aliases
-        with
-          newUserNames : UserNameMap
+    controller common.admin can
+      AcknowledgeRename : ContractId Session
         do
-          create Aliases with userNames = newUserNames, ..
+          nextAvailableSession numberOfRenames common
+
+{- Username assignments maintained by the admin but visible to all users via public party. -}
+template UserName
+  with
+    common : Common
+  where
+    signatory common.admin
+    observer common.public
+    key (common.admin, common.userName) : (Party, Text)
+    maintainer key._1
 
 -- Tests --
 
@@ -131,32 +136,49 @@ testRequestsAndAliases = scenario do
   alice <- getParty "alice"
   bob <- getParty "bob"
   admin <- getParty "admin"
+  public <- getParty "public"
 
-  aliases <-submit admin do create Aliases with userNames = M.empty, ..
   let alicesDesiredUserName = "Alice"
   alicesReq <- submit alice do
                   create SessionRequest with
-                    admin
-                    user = alice
-                    userName = alicesDesiredUserName
+                    common = Common with user = alice, userName = alicesDesiredUserName, ..
 
-  (alicesSessionId, aliases) <- submit admin do exercise alicesReq Acknowledge
+  alicesSessionId <- submit admin do exercise alicesReq Acknowledge
   alicesSession <- submit alice do fetch alicesSessionId
-  assert $ alicesSession.userName == alicesDesiredUserName
+  assert $ alicesSession.common.userName == alicesDesiredUserName
 
   bobsReq <- submit bob do
                   create SessionRequest with
-                    admin
-                    user = bob
-                    userName = alicesDesiredUserName    -- tries to use the same
+                    -- tries to use the same userName
+                    common = Common with user = bob, userName = alicesDesiredUserName, ..
 
-  (bobsSessionId, aliases ) <- submit admin do exercise bobsReq Acknowledge
+  bobsSessionId <- submit admin do exercise bobsReq Acknowledge
   bobsSession <- submit bob do fetch bobsSessionId
-  assert $ bobsSession.userName /= alicesDesiredUserName
+  assert $ bobsSession.common.userName /= alicesDesiredUserName
 
-  (_, alicesViewOfAliases) <- submit alice do fetchByKey @Aliases admin
-  assert $ M.lookup alicesDesiredUserName alicesViewOfAliases.userNames == Some alice
+  (_aId, alicesUserName) <- submit public do fetchByKey @UserName (admin, alicesDesiredUserName)
+  assert $ alicesUserName.common.user == alice
 
-  (_, bobsViewOfAliases) <- submit bob do fetchByKey @Aliases admin
-  assert $ M.lookup alicesDesiredUserName bobsViewOfAliases.userNames == Some alice
+  let bobsNewName = "Bobby"
+  bobsRename <- submit bob do
+                  exercise bobsSessionId Rename with
+                    newUserName = bobsNewName
+
+  bobsSessionId <- submit admin do exercise bobsRename AcknowledgeRename
+
+  (_bId, bobsUserName) <- submit public do fetchByKey @UserName (admin, bobsNewName)
+  assert $ bobsUserName.common.user == bob
+
+  let bobsSecondName = "Rober"
+  bobsRename <- submit bob do
+                  exercise bobsSessionId Rename with
+                    newUserName = bobsSecondName
+
+  bobsSessionId <- submit admin do exercise bobsRename AcknowledgeRename
+  bobsSession <- submit bob do fetch bobsSessionId
+  assert $ bobsSession.numberOfRenames == 2
+
+  (_bId, bobsUserName) <- submit public do fetchByKey @UserName (admin, bobsSecondName)
+  assert $ bobsUserName.common.user == bob
+
   return ()
