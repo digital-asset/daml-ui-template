@@ -1,0 +1,4 @@
+{
+  "typescript.tsdk": "ui/.yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}
