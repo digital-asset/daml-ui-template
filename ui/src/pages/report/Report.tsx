@@ -6,7 +6,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import Button from "@material-ui/core/Button";
 import { useStreamQuery, useLedger, useParty } from "@daml/react";
-import { CreateEvent } from "@daml/ledger";
 import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
@@ -30,7 +29,7 @@ export default function Report() {
   };
 
   const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
-  function showGive(asset : CreateEvent<Asset>) {
+  function showGive(asset : Asset.CreateEvent) {
     async function onClose(state : Give | null) {
       setGiveProps({ ...defaultGiveProps, open: false});
       if (!state) return;
@@ -54,7 +53,7 @@ export default function Report() {
   };
   const [ appraiseProps, setAppraiseProps ] = useState(defaultAppraiseProps);
 
-  function showAppraise(asset : CreateEvent<Asset>) {
+  function showAppraise(asset : Asset.CreateEvent) {
     async function onClose(state : UserSpecifiedAppraise | null) {
       setAppraiseProps({ ...defaultAppraiseProps, open: false});
       if (!state) return;
