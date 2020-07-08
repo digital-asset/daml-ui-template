@@ -17,7 +17,7 @@ type SidebarLinkProps = {
 }
 
 const Sidebar = ({ location } : RouteComponentProps) => {
-  var classes = useStyles();
+  const classes = useStyles();
 
   return (
     <Drawer open variant="permanent" className={classes.drawer} classes={{ paper: classes.drawer }}>
