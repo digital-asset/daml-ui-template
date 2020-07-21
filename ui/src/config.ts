@@ -4,7 +4,8 @@ export const isLocalDev = process.env.NODE_ENV === 'development';
 
 let host = window.location.host.split('.')
 
-export const ledgerId = isLocalDev ? "daml-ui-template" : host[0];
+const applicationId = 'daml-ui-template'
+export const ledgerId = isLocalDev ? applicationId : host[0];
 
 let apiUrl = host.slice(1)
 apiUrl.unshift('api')
@@ -16,11 +17,12 @@ export const httpBaseUrl = isLocalDev ? undefined : ('https://' + apiUrl.join('.
 // directly in development mode.
 export const wsBaseUrl = isLocalDev ? 'ws://localhost:7575/' : undefined;
 
-const applicationId = "daml-ui-template";
-
 export const createToken = (party : string) => jwt.sign({ "https://daml.com/ledger-api": { ledgerId, applicationId, admin: true, actAs: [party], readAs: [party] } }, "secret")
 
 let loginUrl = host.slice(1)
 loginUrl.unshift('login')
 
 export const dablLoginUrl = loginUrl.join('.') + (window.location.port ? ':' + window.location.port : '') + '/auth/login?ledgerId=' + ledgerId;
+
+export const daml_party_key = applicationId + ".daml.party";
+export const daml_token_key = applicationId + ".daml.token";

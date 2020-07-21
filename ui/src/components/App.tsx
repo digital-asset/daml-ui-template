@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import { daml_party_key, daml_token_key } from "../config";
 import { useUserState, useUserDispatch } from "../context/UserContext";
 import Layout from "./Layout/Layout";
 import ErrorComponent from "../pages/error/Error";
@@ -27,8 +28,8 @@ export default function App() {
   // #######################################################################
 
   function RootRoute() {
-    var userDispatch = useUserDispatch();
-  
+    const userDispatch = useUserDispatch();
+
     useEffect(() => {
       const url = new URL(window.location.toString());
       const token = url.searchParams.get('token');
@@ -39,17 +40,17 @@ export default function App() {
       if (party === null) {
         throw Error("When 'token' is passed via URL, 'party' must be passed too.");
       }
-      localStorage.setItem("daml.party", party);
-      localStorage.setItem("daml.token", token);
-  
+      localStorage.setItem(daml_party_key, party);
+      localStorage.setItem(daml_token_key, token);
+
       userDispatch({ type: "LOGIN_SUCCESS", token, party });
     })
-  
+
     return (
       <Redirect to="/app/report" />
     )
   }
-  
+
   function PrivateRoute({ component, ...rest } : any) {
     return (
       <Route
