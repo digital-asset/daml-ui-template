@@ -6,6 +6,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import Button from "@material-ui/core/Button";
 import { useStreamQuery, useLedger, useParty } from "@daml/react";
+import Ledger from "@daml/ledger";
 import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
@@ -13,7 +14,7 @@ import useStyles from "./styles";
 export default function Report() {
   const classes = useStyles();
   const party = useParty();
-  const ledger = useLedger();
+  const ledger : Ledger = useLedger();
   const assets = useStreamQuery(Asset).contracts;
 
   const defaultGiveProps : InputDialogProps<Give> = {
