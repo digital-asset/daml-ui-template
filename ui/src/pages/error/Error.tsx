@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import useStyles from "./styles";
 
 const Error = () => {
-  var classes = useStyles();
+  const classes = useStyles();
 
   return (
     <Grid container className={classes.container}>

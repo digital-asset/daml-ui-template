@@ -49,7 +49,7 @@ const UserProvider : React.FC = ({ children }) => {
   const token = localStorage.getItem("daml.token")
 
   let initState : UserState = (!!party && !!token) ? { isAuthenticated : true, token, party } : { isAuthenticated : false };
-  var [state, dispatch] = React.useReducer<React.Reducer<UserState,LoginAction>>(userReducer, initState);
+  const [state, dispatch] = React.useReducer<React.Reducer<UserState,LoginAction>>(userReducer, initState);
 
   return (
     <UserStateContext.Provider value={state}>
@@ -61,7 +61,7 @@ const UserProvider : React.FC = ({ children }) => {
 }
 
 function useUserState() {
-  var context = React.useContext<UserState>(UserStateContext);
+  const context = React.useContext<UserState>(UserStateContext);
   if (context === undefined) {
     throw new Error("useUserState must be used within a UserProvider");
   }
@@ -69,7 +69,7 @@ function useUserState() {
 }
 
 function useUserDispatch() {
-  var context = React.useContext<React.Dispatch<LoginAction>>(UserDispatchContext);
+  const context = React.useContext<React.Dispatch<LoginAction>>(UserDispatchContext);
   if (context === undefined) {
     throw new Error("useUserDispatch must be used within a UserProvider");
   }
