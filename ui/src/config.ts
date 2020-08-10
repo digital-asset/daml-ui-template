@@ -24,5 +24,5 @@ loginUrl.unshift('login')
 
 export const dablLoginUrl = loginUrl.join('.') + (window.location.port ? ':' + window.location.port : '') + '/auth/login?ledgerId=' + ledgerId;
 
-export const daml_party_key = applicationId + ".daml.party";
-export const daml_token_key = applicationId + ".daml.token";
+export const damlPartyKey = applicationId + ".daml.party";
+export const damlTokenKey = applicationId + ".daml.token";

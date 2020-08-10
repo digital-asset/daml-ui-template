@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
-import { daml_party_key, daml_token_key } from "../config";
+import { damlPartyKey, damlTokenKey } from "../config";
 import { useUserState, useUserDispatch } from "../context/UserContext";
 import Layout from "./Layout/Layout";
 import ErrorComponent from "../pages/error/Error";
@@ -40,8 +40,8 @@ export default function App() {
       if (party === null) {
         throw Error("When 'token' is passed via URL, 'party' must be passed too.");
       }
-      localStorage.setItem(daml_party_key, party);
-      localStorage.setItem(daml_token_key, token);
+      localStorage.setItem(damlPartyKey, party);
+      localStorage.setItem(damlTokenKey, token);
 
       userDispatch({ type: "LOGIN_SUCCESS", token, party });
     })
