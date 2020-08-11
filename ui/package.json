@@ -6,6 +6,7 @@
     "@daml.js/daml-ui-template-0.0.1": "file:../daml.js/daml-ui-template-0.0.1",
     "@daml/ledger": "1.2.0",
     "@daml/react": "1.2.0",
+    "@daml/types": "1.2.0",
     "@material-ui/core": "^4.3.0",
     "@material-ui/icons": "^4.2.1",
     "@material-ui/styles": "^4.3.0",
