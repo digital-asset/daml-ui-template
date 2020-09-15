@@ -5,8 +5,9 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import Button from "@material-ui/core/Button";
+import Ledger from "@daml/ledger";
 import { useStreamQuery, useLedger, useParty } from "@daml/react";
-import { CreateEvent } from "@daml/ledger";
+import { ContractId } from "@daml/types";
 import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
@@ -14,7 +15,7 @@ import useStyles from "./styles";
 export default function Report() {
   const classes = useStyles();
   const party = useParty();
-  const ledger = useLedger();
+  const ledger : Ledger = useLedger();
   const assets = useStreamQuery(Asset).contracts;
 
   const defaultGiveProps : InputDialogProps<Give> = {
@@ -30,10 +31,12 @@ export default function Report() {
   };
 
   const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
-  function showGive(asset : CreateEvent<Asset>) {
+  // One can pass the original contracts CreateEvent
+  function showGive(asset : Asset.CreateEvent) {
     async function onClose(state : Give | null) {
       setGiveProps({ ...defaultGiveProps, open: false});
-      if (!state) return;
+      // if you want to use the contracts payload
+      if (!state || asset.payload.owner === state.newOwner) return;
       await ledger.exercise(Asset.Give, asset.contractId, state);
     };
     setGiveProps({ ...defaultGiveProps, open: true, onClose})
@@ -54,12 +57,13 @@ export default function Report() {
   };
   const [ appraiseProps, setAppraiseProps ] = useState(defaultAppraiseProps);
 
-  function showAppraise(asset : CreateEvent<Asset>) {
+  // Or can pass just the ContractId of an
+  function showAppraise(assetContractId : ContractId<Asset>) {
     async function onClose(state : UserSpecifiedAppraise | null) {
       setAppraiseProps({ ...defaultAppraiseProps, open: false});
       if (!state) return;
       const withNewDateOfAppraisal = { ...state, newDateOfAppraisal:today};
-      await ledger.exercise(Asset.Appraise, asset.contractId, withNewDateOfAppraisal);
+      await ledger.exercise(Asset.Appraise, assetContractId, withNewDateOfAppraisal);
     };
     setAppraiseProps({...defaultAppraiseProps, open: true, onClose});
   };
@@ -127,8 +131,8 @@ export default function Report() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {assets.map((a, i) => (
-            <TableRow key={i} className={classes.tableRow}>
+          {assets.map(a => (
+            <TableRow key={a.contractId} className={classes.tableRow}>
               <TableCell key={0} className={classes.tableCell}>{a.payload.issuer}</TableCell>
               <TableCell key={1} className={classes.tableCell}>{a.payload.owner}</TableCell>
               <TableCell key={2} className={classes.tableCell}>{a.payload.name}</TableCell>
@@ -138,7 +142,7 @@ export default function Report() {
                 <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.owner !== party} onClick={() => showGive(a)}>Give</Button>
               </TableCell>
               <TableCell key={6} className={classes.tableCellButton}>
-                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.issuer !== party} onClick={() => showAppraise(a)}>Appraise</Button>
+                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.issuer !== party} onClick={() => showAppraise(a.contractId)}>Appraise</Button>
               </TableCell>
             </TableRow>
           ))}

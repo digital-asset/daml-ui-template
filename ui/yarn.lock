@@ -1137,7 +1137,7 @@
 "@daml.js/daml-ui-template-0.0.1@file:../daml.js/daml-ui-template-0.0.1":
   version "1.2.0"
   dependencies:
-    "@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662" "file:../../../Library/Caches/Yarn/v6/npm-@daml-js-daml-ui-template-0-0-1-1.2.0-824d170d-4c97-40f4-8394-bfca377187b8-1592235178515/node_modules/@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662"
+    "@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662" "file:../../../../../Library/Caches/Yarn/v6/npm-@daml-js-daml-ui-template-0-0-1-1.2.0-ad38394c-b392-4d4a-897a-aa67c38ae79d-1597075883193/node_modules/@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662"
     "@daml/ledger" "1.2.0"
     "@daml/types" "1.2.0"
     "@mojotech/json-type-validation" "^3.1.0"
