@@ -1,6 +1,6 @@
 import React from "react";
 import { History } from 'history';
-import { createToken, dablLoginUrl } from "../config";
+import { createToken, dablLoginUrl, damlPartyKey, damlTokenKey } from "../config";
 
 type AuthenticatedUser = {
   isAuthenticated : true
@@ -45,8 +45,8 @@ function userReducer(state : UserState, action : LoginAction) : UserState {
 }
 
 const UserProvider : React.FC = ({ children }) => {
-  const party = localStorage.getItem("daml.party")
-  const token = localStorage.getItem("daml.token")
+  const party = localStorage.getItem(damlPartyKey);
+  const token = localStorage.getItem(damlTokenKey);
 
   let initState : UserState = (!!party && !!token) ? { isAuthenticated : true, token, party } : { isAuthenticated : false };
   const [state, dispatch] = React.useReducer<React.Reducer<UserState,LoginAction>>(userReducer, initState);
@@ -91,8 +91,8 @@ function loginUser(
 
   if (!!party) {
     const token = userToken || createToken(party)
-    localStorage.setItem("daml.party", party);
-    localStorage.setItem("daml.token", token);
+    localStorage.setItem(damlPartyKey, party);
+    localStorage.setItem(damlTokenKey, token);
 
     dispatch({ type: "LOGIN_SUCCESS", token, party });
     setError(false);
