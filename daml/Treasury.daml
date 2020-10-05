@@ -1,0 +1,190 @@
+
+
+module Treasury where
+
+import Daml.Script
+import DA.Date
+import DA.Action (foldrA)
+import DA.Optional
+
+import Main
+
+
+-- Example role contract
+-- The purpose of the contract is to store _on-ledger_ the set of assets that
+-- were created by a treasurer. By default the treasurer will always have access
+-- to these contracts _off-ledger_, but by keeping track of them here, the
+-- treasurer can encode business logic that would be guaranteed via DAML actions
+-- on a set of contracts. For example, DeflateAssets operates on all contracts
+-- that have been issued.
+template TreasurerRole
+  with
+    treasurer : Party
+    issuedAssets : [ContractId Asset]   -- Keep track of issued assets.
+    observers : [Party]
+  where
+    signatory treasurer
+    observer observers
+
+    -- Controller-first choices allow you to specify a set of choices one party can
+    -- exercise. They are useful in role contracts, like this one, as the main signatory
+    -- of the role (ie. treasurer) can exercise many choices.
+    controller treasurer can
+      AddObserver : ContractId TreasurerRole
+        with
+          who : Party
+        do
+          create this with observers = who :: observers
+
+      DeflateAssets : ([ContractId Asset], ContractId TreasurerRole)
+        do
+          now <- getTime
+          -- forA is the same as mapA except with arguments reversed.
+          newAssets <- forA issuedAssets (\assetId -> do
+            asset <- fetch assetId
+            exercise assetId Appraise with
+              newDateOfAppraisal = toDateUTC now
+              newValue = asset.value / 2.0)
+          newT <- create this with issuedAssets = newAssets
+          return (newAssets, newT)
+
+      -- We won't return a ContractId just for demo purposes
+      OwnedBy : [Asset]
+        with
+          owners : [Party]
+        do
+          -- I'm purposefully using 'foldrA' here because it is _the_ most powerful
+          -- and flexible operation that one can perform over a list of things, and
+          -- we have demo'd forA above.
+          foldrA (\ assetId accum -> do
+              asset <- fetch assetId
+              --if elem asset.owner owners      -- equivalent to below
+              if asset.owner `elem` owners      -- the backticks, grave accent, "`" transform
+                                                -- the function (ie. elem) into an infix form
+              then return (asset :: accum)
+              else return accum
+            )
+            []
+            issuedAssets
+
+
+    -- Choice-first choices are useful when different types of parties within a contract
+    -- can exercise that choice, but you have to pass in the controller (ie. who) as an
+    -- argument to the choice.
+    choice CreateAsset : (ContractId Asset, ContractId TreasurerRole)
+        with
+          who    : Party    -- treasurer or someone in observers
+          owner  : Party    -- Rest of the arguments to create an asset.
+          name   : Text
+          dateOfAppraisal : Date
+          value : Decimal
+      controller who
+        do
+          -- The ".." syntax here is a convenience of DAML that says grab the rest of the
+          -- arguments (in this case owner, name, dateOfAppraisal, value) from the current
+          -- context. The context here includes the arguments to this choice and the fields
+          -- of the templates. Please be careful.
+          a <- create Asset with issuer = treasurer, ..
+          t <- create this with issuedAssets = a :: issuedAssets
+          return (a, t)
+
+    -- !!!! Note that there are several bugs with this implementation !!!!
+    -- 1. There is no constraint on the treasurer from creating Assets outside of this template?
+    --    How can we fix this? Can we sign those assets with another right?
+    -- 2. What if the treasurer archives a contract?
+    --    We need another choice.
+
+
+{- To better understand the ledger interactions and how the state evolves:
+    1. Open up the script results; there should be a little grey link 'Script results'
+        below.
+    2. Then use the starting "{-" and closing "-}" comments to stop the execution of
+        certain events on the ledger.
+ -}
+demo : Script ()
+demo = script do
+
+  let today = date 2020 Jan 1
+
+  treasurer <- allocatePartyWithHint "Treasurer" $ PartyIdHint with partyIdHint = "Treasurer"
+
+  -- Create our role
+  treasurerRoleId <-
+    submit treasurer do
+      createCmd TreasurerRole with
+        treasurer             -- If a record field name (ex 'treasurer') matches
+                              -- the variable name (ex. 'treasurer),
+                              -- we don't need to write the assignment:
+                              -- ex. treasurer = treasurer
+        issuedAssets = []
+        observers = []
+
+  -- Create an asset for Alice
+  alice <- allocatePartyWithHint "Alice" $ PartyIdHint with partyIdHint = "Alice"
+
+  -- Notice that I'm reassigning 'treasurerRoleId',
+  -- effectively hiding the variable name reference to
+  -- the archived TreasurerRole contract
+  (alicesAssetId, treasurerRoleId) <-
+    submit treasurer do
+      exerciseCmd treasurerRoleId CreateAsset with
+        who = treasurer
+        owner = alice
+        name = "Computer"
+        dateOfAppraisal = today
+        value = 1.0
+
+  -- Check to make sure that Alice can see her computer
+  alicesComputerOpt <- queryContractId alice alicesAssetId
+  assert $ isSome alicesComputerOpt
+
+  -- Create an asset for Bob
+  bob <- allocatePartyWithHint "Bob" $ PartyIdHint with partyIdHint = "Bob"
+  (bobsAssetId, treasurerRoleId) <-
+    submit treasurer do
+      exerciseCmd treasurerRoleId CreateAsset with
+        who = treasurer
+        owner = bob
+        name = "TV"
+        dateOfAppraisal = today
+        value = 2.0
+
+  -- The treasurer has alice lot of power!!!
+  (assetIds, treasurerRoleId) <-
+    submit treasurer do
+      exerciseCmd treasurerRoleId do
+        DeflateAssets
+
+  let [bobsAssetId, alicesAssetId] = assetIds   -- Since we create new assets!
+
+  -- Add an observer
+  to1 <- allocatePartyWithHint "Treasurer Employee1" $ PartyIdHint with partyIdHint = "Treasurer Employee1"
+  treasurerRoleId <-
+    submit treasurer do
+      exerciseCmd treasurerRoleId do
+        AddObserver with
+          who = to1
+
+  -- Observer can create an asset too !!
+  (toa1, treasurerRoleId) <-
+    submit to1 do
+      exerciseCmd treasurerRoleId CreateAsset with
+        who = to1
+        owner = bob
+        name = "Car"
+        dateOfAppraisal = today
+        value = 1000.0
+
+  alicesAndBobs <-
+    submit treasurer do
+      exerciseCmd treasurerRoleId OwnedBy with
+        owners = [alice, bob]
+
+  -- Let's find Bob's TV and make sure that it is in alicesAndBobs
+  bobsTvOpt <- queryContractId bob bobsAssetId
+  assert $ isSome bobsTvOpt
+  let Some bobsTv = bobsTvOpt                 -- Pattern matching on the left-hand
+                                              -- side unwrap the Asset.
+  assert $ bobsTv `elem` alicesAndBobs
+
+  pure ()
