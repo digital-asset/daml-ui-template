@@ -1,7 +1,6 @@
 -- Copyright (c) 2019 The DAML Authors. All rights reserved.
 -- SPDX-License-Identifier: Apache-2.0
 
-daml 1.2
 module Main where
 
 import Daml.Script
@@ -27,8 +26,8 @@ template Asset
         do
           create this with
             owner = newOwner
-            
-    controller issuer can            
+
+    controller issuer can
       Appraise : AssetId
         with
           newDateOfAppraisal : Date
@@ -44,10 +43,15 @@ setup = do
   bob <- allocatePartyWithHint "Bob" $ PartyIdHint with partyIdHint = "Bob"
 
   let now = date 2020 Jan 1
+  -- Create some assets
   submit alice do createCmd Asset with issuer = alice; owner = alice; name = "TV"; dateOfAppraisal = now; value = 1_000.0
-  submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Car"; dateOfAppraisal = now; value = 30_000.0
+  carId <- submit alice do createCmd Asset with issuer = alice; owner = alice; name = "Car"; dateOfAppraisal = now; value = 30_000.0
   submit alice do createCmd Asset with issuer = alice; owner = bob; name = "Boat"; dateOfAppraisal = now; value = 90_000.0
   submit bob do createCmd Asset with issuer = bob; owner = alice; name = "Bike"; dateOfAppraisal = now; value = 200.0
   submit bob do createCmd Asset with issuer = bob; owner = bob; name = "House"; dateOfAppraisal = now; value = 400_000.0
+
+
+  -- Demonstrate transfering assets.
+  submit alice do exerciseCmd carId Give with newOwner = bob
 
   pure ()
