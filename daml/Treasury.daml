@@ -49,7 +49,7 @@ template TreasurerRole
           return (newAssets, newT)
 
       -- We won't return a ContractId just for demo purposes
-      OwnedBy : [Asset]
+      nonconsuming OwnedBy : [Asset]
         with
           owners : [Party]
         do
