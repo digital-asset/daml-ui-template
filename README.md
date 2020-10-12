@@ -19,6 +19,8 @@ make build
 2. Start the sandbox ledger
 ```
 daml start
+
+(Note that in this usecase, the script will populate the ledger with 1024 dummy People contracts, which takes around 30 seconds.)
 ```
 
 3. In a new shell, start the UI
@@ -36,15 +38,11 @@ make build
 
 ## Exploring the application
 
-- Login as `Alice` (case sensitive), leaving the password blank.
+- Login as `Administrator` (case sensitive), leaving the password blank.
 
-- You are now redirected to `http://localhost:3000/#/app/report` where you see a table with all `Asset` contracts listed.
+- You are now redirected to `http://localhost:3000/#/app/report` where you see a table with all `Person` contracts listed.
 
-- Two choice buttons are displayed for each contract: the `Give` choice is enabled if the logged-in party is the `owner` of an asset. The `Appraise` button is enabled if the logged-in user is the `issuer` of the asset.
-
-- Both choices will open a dialog to enter the required parameters. The dialog currently supports `text`, `number`, `date`, and `selection` input types.
-
-The `Report` page is meant as an example, which you can copy and modify to your needs.
+- Two filter inputs are provided, and the results can be paged, according to the `Page Size` input.
 
 ## Deploying to production
 
