@@ -22,11 +22,35 @@ export default function Report() {
   const classes = useStyles();
   const party = useParty();
   const ledger : Ledger = useLedger();
-  const assets = useStreamQuery(PersonWithAddress).contracts;
   var [nameFilter, setNameFilter] = useState('');
+  var [nameFilter2, setNameFilter2] = useState('');
   var [addressFilter, setAddressFilter] = useState('');
   var [pageCount, setPageCount] = useState(0);
   var [pageSize, setPageSize] = useState<number>(16);
+  function personQuery() {
+    if(nameFilter === ''){
+      if(nameFilter2 === ''){
+        console.log('empty');
+        return {};
+      } else {
+        const q = {details: {personName: ({ "%lt":nameFilter2} as unknown as string)}};
+        console.log(`Query 1a: ${JSON.stringify(q)}`);
+        return q;
+      }
+    } else {
+      if(nameFilter2 === ''){
+        const q = {details: {personName: ({"%gt": nameFilter} as unknown as string)}};
+        console.log(`Query r: ${JSON.stringify(q)}`);
+        return q;
+      } else {
+        const q = {details: {personName: ({"%gt": nameFilter, "%lt":nameFilter2} as unknown as string)}};
+        console.log(`Query 2: ${JSON.stringify(q)}`);
+        return q;
+      }
+    }
+    //return {details: {personName: {"%gt": nameFilter}}}
+  }
+  const assets = useStreamQuery(PersonWithAddress, personQuery, [nameFilter, nameFilter2]).contracts;
 
     const defaultGiveProps : InputDialogProps<Give> = {
     open: false,
@@ -138,6 +162,20 @@ export default function Report() {
           }
         />
       </FormControl>
+      <FormControl style={{ marginLeft : '30px' }}>
+        <InputLabel htmlFor="input-with-icon-adornment">Filter name 2</InputLabel>
+        <Input
+          id="input-with-icon-adornment"
+          onChange={(event) => setNameFilter2(event.target.value)}
+          value={nameFilter2}
+          startAdornment={
+            <InputAdornment position="start">
+              <SearchIcon/>
+            </InputAdornment>
+          }
+        />
+      </FormControl>
+
       <FormControl style={{ marginLeft : '30px' }}>
         <InputLabel htmlFor="input-with-icon-adornment" >Filter address</InputLabel>
         <Input
