@@ -4,21 +4,31 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
-import Button from "@material-ui/core/Button";
+import TextField from '@material-ui/core/TextField';
+import Input from '@material-ui/core/Input';
+import SearchIcon from '@material-ui/icons/Search';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Ledger from "@daml/ledger";
-import { useStreamQuery, useLedger, useParty } from "@daml/react";
+import { useStreamQuery, useLedger, useParty} from "@daml/react";
 import { ContractId } from "@daml/types";
-import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
+import { Appraise, Asset, Give, PersonWithAddress  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
+import { Grid } from "@material-ui/core";
 
 export default function Report() {
   const classes = useStyles();
   const party = useParty();
   const ledger : Ledger = useLedger();
-  const assets = useStreamQuery(Asset).contracts;
+  const assets = useStreamQuery(PersonWithAddress).contracts;
+  var [nameFilter, setNameFilter] = useState('');
+  var [addressFilter, setAddressFilter] = useState('');
+  var [pageCount, setPageCount] = useState(0);
+  var [pageSize, setPageSize] = useState<number>(16);
 
-  const defaultGiveProps : InputDialogProps<Give> = {
+    const defaultGiveProps : InputDialogProps<Give> = {
     open: false,
     title: "Give Asset",
     defaultValue: { newOwner : "" },
@@ -115,35 +125,75 @@ export default function Report() {
       <InputDialog { ...giveProps } />
       <InputDialog { ...appraiseProps } />
       <InputDialog { ...newAssetProps } />
-      <Button color="primary" size="small" className={classes.choiceButton} variant="contained" onClick={() => showNewAsset()}>
-        Create New Asset
-      </Button>
+      <FormControl style={{ marginLeft : '30px' }}>
+        <InputLabel htmlFor="input-with-icon-adornment">Filter full name</InputLabel>
+        <Input
+          id="input-with-icon-adornment"
+          onChange={(event) => setNameFilter(event.target.value)}
+          value={nameFilter}
+          startAdornment={
+            <InputAdornment position="start">
+              <SearchIcon/>
+            </InputAdornment>
+          }
+        />
+      </FormControl>
+      <FormControl style={{ marginLeft : '30px' }}>
+        <InputLabel htmlFor="input-with-icon-adornment" >Filter address</InputLabel>
+        <Input
+          id="input-with-icon-adornment"
+          onChange={(event) => setAddressFilter(event.target.value)}
+          value={addressFilter}
+          startAdornment={
+            <InputAdornment position="start">
+              <SearchIcon/>
+            </InputAdornment>
+          }
+        />
+      </FormControl>
+      <Grid item>
+      </Grid>
+      <Grid item>
+        <TextField style={{ marginLeft : '30px' }}
+                autoFocus
+                label="Page Number"
+                type="number"
+                onChange={(event) => setPageCount(parseInt(event.target.value))}
+                value={pageCount}
+                />
+                </Grid>
+                <Grid item>
+                <TextField style={{ marginLeft : '30px' }}
+                autoFocus
+                label="Page Size"
+                type="number"
+                onChange={(event) => setPageSize(parseInt(event.target.value))}
+                value={pageSize}
+                />
+                </Grid>
+
       <Table size="small">
         <TableHead>
           <TableRow className={classes.tableRow}>
-            <TableCell key={0} className={classes.tableCell}>Issuer</TableCell>
-            <TableCell key={1} className={classes.tableCell}>Owner</TableCell>
-            <TableCell key={2} className={classes.tableCell}>Name</TableCell>
-            <TableCell key={3} className={classes.tableCell}>Value</TableCell>
+            <TableCell key={0} className={classes.tableCell}>Party</TableCell>
+            <TableCell key={1} className={classes.tableCell}>Full Name</TableCell>
+            <TableCell key={2} className={classes.tableCell}>Address</TableCell>
+            {/* <TableCell key={3} className={classes.tableCell}>Value</TableCell>
             <TableCell key={4} className={classes.tableCell}>DateOfAppraisal</TableCell>
             <TableCell key={5} className={classes.tableCell}>Give</TableCell>
-            <TableCell key={6} className={classes.tableCell}>Appraise</TableCell>
+            <TableCell key={6} className={classes.tableCell}>Appraise</TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
-          {assets.map(a => (
+          {assets.filter(x => x.payload.details.personName.indexOf(nameFilter)!==-1
+          && x.payload.details.personAddress.indexOf(addressFilter)!==-1).slice(pageSize*pageCount, pageSize*pageCount+pageSize).map(a => (
             <TableRow key={a.contractId} className={classes.tableRow}>
-              <TableCell key={0} className={classes.tableCell}>{a.payload.issuer}</TableCell>
-              <TableCell key={1} className={classes.tableCell}>{a.payload.owner}</TableCell>
-              <TableCell key={2} className={classes.tableCell}>{a.payload.name}</TableCell>
-              <TableCell key={3} className={classes.tableCell}>{a.payload.value}</TableCell>
-              <TableCell key={4} className={classes.tableCell}>{a.payload.dateOfAppraisal}</TableCell>
-              <TableCell key={5} className={classes.tableCellButton}>
-                <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.owner !== party} onClick={() => showGive(a)}>Give</Button>
-              </TableCell>
-              <TableCell key={6} className={classes.tableCellButton}>
+              <TableCell key={0} className={classes.tableCell}>{a.payload.administrator}</TableCell>
+              <TableCell key={1} className={classes.tableCell}>{a.payload.details.personName}</TableCell>
+              <TableCell key={2} className={classes.tableCell}>{a.payload.details.personAddress}</TableCell>
+              {/* <TableCell key={6} className={classes.tableCellButton}>
                 <Button color="primary" size="small" className={classes.choiceButton} variant="contained" disabled={a.payload.issuer !== party} onClick={() => showAppraise(a.contractId)}>Appraise</Button>
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>
