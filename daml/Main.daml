@@ -1,11 +1,28 @@
--- Copyright (c) 2019 The DAML Authors. All rights reserved.
+-- Copyright (c) 2020 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
 -- SPDX-License-Identifier: Apache-2.0
 
-daml 1.2
+
 module Main where
 
 import Daml.Script
 import DA.Date
+import DA.Foldable (forA_)
+import Person
+import Prelude hiding (getParty)
+import ScriptUtils
+import SourceData(people)
+
+template PersonWithAddress
+  with
+    administrator : Party
+    details : Person
+  where
+    signatory administrator
+
+initializePeople : Script ()
+initializePeople = do
+  administrator <- getParty "Administrator"
+  forA_ people $ \details-> submit administrator do createCmd PersonWithAddress with ..
 
 type AssetId = ContractId Asset
 

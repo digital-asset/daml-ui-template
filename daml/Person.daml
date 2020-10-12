@@ -1,0 +1,7 @@
+
+module Person where
+
+data Person = Person {
+    personName : Text,
+    personAddress: Text }
+      deriving (Show, Eq)
