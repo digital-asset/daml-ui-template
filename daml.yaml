@@ -4,8 +4,9 @@ source: daml
 parties:
   - Alice
   - Bob
+  - Administrator
 version: 0.0.1
-init-script: Main:setup
+init-script: Main:initializePeople
 start-navigator: false
 sandbox-options:
   - --ledgerid=daml-ui-template
