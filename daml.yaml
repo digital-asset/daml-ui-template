@@ -7,7 +7,7 @@ parties:
   - Administrator
 version: 0.0.1
 init-script: Main:initializePeople
-start-navigator: false
+start-navigator: true
 sandbox-options:
   - --ledgerid=daml-ui-template
   - -w
@@ -15,3 +15,7 @@ dependencies:
   - daml-prim
   - daml-stdlib
   - daml-script
+json-api-options:
+  - --query-store-jdbc-config=driver=org.postgresql.Driver,url=jdbc:postgresql://localhost:5432/daml_ui_template,user=daml_json_client,password=password,createSchema=false
+    #                          driver=org.postgresql.Driver,url=jdbc:postgresql://localhost:5432/test?&ssl=true,user=postgres,password=password,createSchema=false
+

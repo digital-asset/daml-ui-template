@@ -4,6 +4,7 @@ import DamlLedger from "@daml/react";
 import Header from "../Header/Header";
 import Sidebar from "../Sidebar/Sidebar";
 import Report from "../../pages/report/Report";
+import Record from "../../pages/record/Record";
 import { useUserState } from "../../context/UserContext";
 import { wsBaseUrl, httpBaseUrl } from "../../config";
 import useStyles from "./styles";
@@ -25,6 +26,7 @@ const Layout = () => {
                 <div className={classes.fakeToolbar} />
                 <Switch>
                   <Route path="/app/report" component={Report} />
+                  <Route path="/app/record" component={Record} />
                 </Switch>
               </div>
             </>
