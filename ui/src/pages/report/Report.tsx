@@ -8,9 +8,11 @@ import Button from "@material-ui/core/Button";
 import Ledger from "@daml/ledger";
 import { useStreamQuery, useLedger, useParty } from "@daml/react";
 import { ContractId } from "@daml/types";
-import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
+import { Appraise, Asset, Give, NewOwner  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
+
+type NameLess = Pick<NewOwner, "owner">
 
 export default function Report() {
   const classes = useStyles();
@@ -18,12 +20,12 @@ export default function Report() {
   const ledger : Ledger = useLedger();
   const assets = useStreamQuery(Asset).contracts;
 
-  const defaultGiveProps : InputDialogProps<Give> = {
+  const defaultGiveProps : InputDialogProps<NameLess> = {
     open: false,
     title: "Give Asset",
-    defaultValue: { newOwner : "" },
+    defaultValue: { owner : ""},
     fields: {
-      newOwner : {
+      owner : {
         label: "New Owner",
         type: "selection",
         items: [ "Alice", "Bob" ] } },
@@ -33,11 +35,11 @@ export default function Report() {
   const [ giveProps, setGiveProps ] = useState(defaultGiveProps);
   // One can pass the original contracts CreateEvent
   function showGive(asset : Asset.CreateEvent) {
-    async function onClose(state : Give | null) {
+    async function onClose(state : NameLess | null) {
       setGiveProps({ ...defaultGiveProps, open: false});
       // if you want to use the contracts payload
-      if (!state || asset.payload.owner === state.newOwner) return;
-      await ledger.exercise(Asset.Give, asset.contractId, state);
+      if (!state || asset.payload.owner === state.owner) return;
+      await ledger.exercise(Asset.Give, asset.contractId, {newOwner: { ... state, ownerName: "foobar"}});
     };
     setGiveProps({ ...defaultGiveProps, open: true, onClose})
   };

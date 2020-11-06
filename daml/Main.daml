@@ -9,6 +9,11 @@ import DA.Date
 
 type AssetId = ContractId Asset
 
+data NewOwner = NewOwner with
+    owner : Party
+    ownerName : Text
+  deriving (Eq, Show)
+
 template Asset
   with
     issuer : Party
@@ -23,12 +28,13 @@ template Asset
     controller owner can
       Give : AssetId
         with
-          newOwner : Party
+          newOwner : NewOwner
         do
+          debug $ newOwner.ownerName
           create this with
-            owner = newOwner
-            
-    controller issuer can            
+            owner = newOwner.owner
+
+    controller issuer can
       Appraise : AssetId
         with
           newDateOfAppraisal : Date
