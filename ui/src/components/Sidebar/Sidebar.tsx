@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, withRouter, RouteComponentProps } from "react-router-dom";
-import { History, Location } from "history";
+import { Location } from "history";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -13,7 +13,7 @@ type SidebarLinkProps = {
   path : string
   icon : JSX.Element
   label : string
-  location : Location<History.PoorMansUnknown>
+  location : Location<unknown>
 }
 
 const Sidebar = ({ location } : RouteComponentProps) => {
