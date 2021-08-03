@@ -6,7 +6,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import Button from "@material-ui/core/Button";
 import Ledger from "@daml/ledger";
-import { useStreamQuery, useLedger, useParty } from "@daml/react";
+import { useStreamQueries, useLedger, useParty } from "@daml/react";
 import { ContractId } from "@daml/types";
 import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
@@ -16,7 +16,7 @@ export default function Report() {
   const classes = useStyles();
   const party = useParty();
   const ledger : Ledger = useLedger();
-  const assets = useStreamQuery(Asset).contracts;
+  const assets = useStreamQueries(Asset);
 
   const defaultGiveProps : InputDialogProps<Give> = {
     open: false,
@@ -131,7 +131,7 @@ export default function Report() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {assets.map(a => (
+          {assets.contracts.map(a => (
             <TableRow key={a.contractId} className={classes.tableRow}>
               <TableCell key={0} className={classes.tableCell}>{a.payload.issuer}</TableCell>
               <TableCell key={1} className={classes.tableCell}>{a.payload.owner}</TableCell>
