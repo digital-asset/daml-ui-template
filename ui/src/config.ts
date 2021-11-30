@@ -7,10 +7,9 @@ let host = window.location.host.split('.')
 const applicationId = 'daml-ui-template'
 export const ledgerId = isLocalDev ? applicationId : host[0];
 
-let apiUrl = host.slice(1)
-apiUrl.unshift('api')
+const apiUrl = host
 
-export const httpBaseUrl = isLocalDev ? undefined : ('https://' + apiUrl.join('.') + (window.location.port ? ':' + window.location.port : '') + '/data/' + ledgerId + '/');
+export const httpBaseUrl = isLocalDev ? undefined : ('https://' + apiUrl.join('.') + (window.location.port ? ':' + window.location.port : '') + '/');
 
 // Unfortunately, the development server of `create-react-app` does not proxy
 // websockets properly. Thus, we need to bypass it and talk to the JSON API
