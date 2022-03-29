@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, withRouter, RouteComponentProps } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Location } from "history";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
@@ -13,10 +13,10 @@ type SidebarLinkProps = {
   path : string
   icon : JSX.Element
   label : string
-  location : Location<unknown>
+  location : Location
 }
 
-const Sidebar = ({ location } : RouteComponentProps) => {
+const Sidebar = ({ location } : any) => {
   const classes = useStyles();
 
   return (
@@ -41,4 +41,4 @@ const SidebarLink = ({ path, icon, label, location } : SidebarLinkProps) => {
   );
 }
 
-export default withRouter(Sidebar);
+export default Sidebar;

@@ -1,5 +1,4 @@
 import React from "react";
-import { withRouter, RouteComponentProps } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -8,7 +7,7 @@ import ExitToApp from "@material-ui/icons/ExitToApp";
 import { useUserDispatch, signOut, useUserState } from "../../context/UserContext";
 import useStyles from "./styles";
 
-const Header = ({ history } : RouteComponentProps) => {
+const Header = ({ history } : any) => {
   const classes = useStyles();
 
   const userState = useUserState();
@@ -36,4 +35,4 @@ const Header = ({ history } : RouteComponentProps) => {
   );
 }
 
-export default withRouter(Header);
+export default Header;
