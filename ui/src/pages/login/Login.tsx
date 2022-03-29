@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { withRouter, RouteComponentProps } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
@@ -11,7 +10,7 @@ import { isLocalDev } from "../../config";
 import useStyles from "./styles";
 import logo from "./logo.svg";
 
-const Login = (props : RouteComponentProps) => {
+const Login = (props : any) => {
   var classes = useStyles();
   var userDispatch = useUserDispatch();
   var [isLoading, setIsLoading] = useState(false);
@@ -125,4 +124,4 @@ const Login = (props : RouteComponentProps) => {
   );
 }
 
-export default withRouter(Login);
+export default Login;

@@ -1,28 +1,24 @@
 import React, { useEffect } from "react";
-import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import { HashRouter, Route, Routes, Navigate, BrowserRouter } from 'react-router-dom';
 import { damlPartyKey, damlTokenKey } from "../config";
 import { useUserState, useUserDispatch } from "../context/UserContext";
 import Layout from "./Layout/Layout";
 import ErrorComponent from "../pages/error/Error";
 import Login from "../pages/login/Login";
+import Report from "../pages/report/Report";
 
 export default function App() {
   const userState = useUserState();
 
   return (
-    <HashRouter>
-      <Switch>
-        <Route exact path="/" component={RootRoute} />
-        <Route
-          exact
-          path="/app"
-          render={() => <Redirect to="/app/report" />}
-        />
-        <PrivateRoute path="/app" component={Layout} />
-        <PublicRoute path="/login" component={Login} />
-        <Route component={ErrorComponent} />
-      </Switch>
-    </HashRouter>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<RootRoute/>} />
+        <Route path="/app/login" element={<Login/>} />
+        <Route path="/apt/report" element={<Report/>}/>
+        <Route element={ErrorComponent} />
+      </Routes>
+    </BrowserRouter>
   );
 
   // #######################################################################
@@ -47,25 +43,21 @@ export default function App() {
     })
 
     return (
-      <Redirect to="/app/report" />
+      <Navigate to="/app/login" />
     )
   }
 
-  function PrivateRoute({ component, ...rest } : any) {
+  function PrivateRoute({ element, ...rest } : any) {
     return (
       <Route
         {...rest}
-        render={props =>
+        render={(props:any) =>
           userState.isAuthenticated ? (
-            React.createElement(component, props)
+            React.createElement(element, props)
           ) : (
-            <Redirect
-              to={{
-                pathname: "/login",
-                state: {
-                  from: props.location,
-                },
-              }}
+            <Navigate
+              to={"/login"}
+              state={{from: props.location}}
             />
           )
         }
@@ -73,19 +65,17 @@ export default function App() {
     );
   }
 
-  function PublicRoute({ component, ...rest } : any) {
+  function PublicRoute({ element, ...rest } : any) {
     return (
       <Route
         {...rest}
-        render={props =>
+        render={(props: any) =>
           userState.isAuthenticated ? (
-            <Redirect
-              to={{
-                pathname: "/",
-              }}
+            <Navigate
+              to={"/"}
             />
           ) : (
-            React.createElement(component, props)
+            React.createElement(element, props)
           )
         }
       />
