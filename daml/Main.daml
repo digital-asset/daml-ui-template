@@ -18,26 +18,27 @@ template Asset
   where
     ensure name /= ""
     signatory issuer
+    observer owner
 
-    controller owner can
-      Give : AssetId
-        with
-          newOwner : Party
+    choice Give : AssetId
+      with
+        newOwner : Party
+      controller owner
         do
           create this with
             owner = newOwner
-            
-    controller issuer can            
-      Appraise : AssetId
-        with
-          newDateOfAppraisal : Date
-          newValue : Decimal
+
+    choice Appraise : AssetId
+      with
+        newDateOfAppraisal : Date
+        newValue : Decimal
+      controller issuer
         do
           create this with
             dateOfAppraisal = newDateOfAppraisal
             value = newValue
 
-setup : Script ()
+setup : Script [(Text, Party)]
 setup = do
   alice <- allocatePartyWithHint "Alice" $ PartyIdHint with partyIdHint = "Alice"
   bob <- allocatePartyWithHint "Bob" $ PartyIdHint with partyIdHint = "Bob"
@@ -49,4 +50,4 @@ setup = do
   submit bob do createCmd Asset with issuer = bob; owner = alice; name = "Bike"; dateOfAppraisal = now; value = 200.0
   submit bob do createCmd Asset with issuer = bob; owner = bob; name = "House"; dateOfAppraisal = now; value = 400_000.0
 
-  pure ()
+  pure [("Alice", alice), ("Bob", bob)]

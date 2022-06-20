@@ -1,9 +1,10 @@
 import React from "react";
 import { History } from 'history';
-import { createToken, dablLoginUrl, damlPartyKey, damlTokenKey } from "../config";
+import { damlAppKey, getParty, getToken } from "../config";
 
 type AuthenticatedUser = {
   isAuthenticated : true
+  name : string
   token : string
   party : string
 }
@@ -16,6 +17,7 @@ type UserState = UnAthenticated | AuthenticatedUser
 
 type LoginSuccess = {
   type : "LOGIN_SUCCESS"
+  name : string
   token : string
   party : string
 }
@@ -36,7 +38,7 @@ const UserDispatchContext = React.createContext<React.Dispatch<LoginAction>>({} 
 function userReducer(state : UserState, action : LoginAction) : UserState {
   switch (action.type) {
     case "LOGIN_SUCCESS":
-      return { isAuthenticated: true, token: action.token, party: action.party };
+      return { isAuthenticated: true, name: action.name, token: action.token, party: action.party };
     case "LOGIN_FAILURE":
       return { isAuthenticated: false };
     case "SIGN_OUT_SUCCESS":
@@ -45,10 +47,11 @@ function userReducer(state : UserState, action : LoginAction) : UserState {
 }
 
 const UserProvider : React.FC = ({ children }) => {
-  const party = localStorage.getItem(damlPartyKey);
-  const token = localStorage.getItem(damlTokenKey);
+  const name = localStorage.getItem(damlAppKey) || "";
+  const party = getParty(name);
+  const token = getToken(party);
 
-  let initState : UserState = (!!party && !!token) ? { isAuthenticated : true, token, party } : { isAuthenticated : false };
+  let initState : UserState = (!!party && !!token) ? { isAuthenticated : true, name, token, party } : { isAuthenticated : false };
   const [state, dispatch] = React.useReducer<React.Reducer<UserState,LoginAction>>(userReducer, initState);
 
   return (
@@ -81,7 +84,7 @@ function useUserDispatch() {
 
 function loginUser(
     dispatch : React.Dispatch<LoginAction>,
-    party : string,
+    name : string,
     userToken : string,
     history : History,
     setIsLoading : React.Dispatch<React.SetStateAction<boolean>>,
@@ -89,12 +92,12 @@ function loginUser(
   setError(false);
   setIsLoading(true);
 
-  if (!!party) {
-    const token = userToken || createToken(party)
-    localStorage.setItem(damlPartyKey, party);
-    localStorage.setItem(damlTokenKey, token);
+  if (!!name) {
+    var party = getParty(name);
+    var token = getToken(party);
+    localStorage.setItem(damlAppKey, name);
 
-    dispatch({ type: "LOGIN_SUCCESS", token, party });
+    dispatch({ type: "LOGIN_SUCCESS", name, token, party });
     setError(false);
     setIsLoading(false);
     history.push("/app");
@@ -105,16 +108,11 @@ function loginUser(
   }
 }
 
-const loginDablUser = () => {
-  window.location.assign(`https://${dablLoginUrl}`);
-}
-
 function signOut(dispatch : React.Dispatch<LoginAction>, history : History) {
-  localStorage.removeItem("daml.party");
-  localStorage.removeItem("daml.token");
+  localStorage.removeItem(damlAppKey);
 
   dispatch({ type: "SIGN_OUT_SUCCESS" });
   history.push("/login");
 }
 
-export { UserProvider, useUserState, useUserDispatch, loginUser, loginDablUser, signOut };
+export { UserProvider, useUserState, useUserDispatch, loginUser, signOut };

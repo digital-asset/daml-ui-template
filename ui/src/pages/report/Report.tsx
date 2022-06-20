@@ -11,6 +11,7 @@ import { ContractId } from "@daml/types";
 import { Appraise, Asset, Give  } from "@daml.js/daml-ui-template-0.0.1/lib/Main";
 import { InputDialog, InputDialogProps } from "./InputDialog";
 import useStyles from "./styles";
+import { getName, getParty } from "../../config";
 
 export default function Report() {
   const classes = useStyles();
@@ -37,7 +38,7 @@ export default function Report() {
       setGiveProps({ ...defaultGiveProps, open: false});
       // if you want to use the contracts payload
       if (!state || asset.payload.owner === state.newOwner) return;
-      await ledger.exercise(Asset.Give, asset.contractId, state);
+      await ledger.exercise(Asset.Give, asset.contractId, { newOwner: getParty(state.newOwner) } );
     };
     setGiveProps({ ...defaultGiveProps, open: true, onClose})
   };
@@ -104,7 +105,7 @@ export default function Report() {
     async function onClose(state : InputFieldsForNewAsset | null) {
       setNewAssetProps({ ...defaultNewAssetProps, open: false});
       if (!state) return;
-      const withIssuer = { ...state, issuer:party};
+      const withIssuer = { ...state, issuer: party, owner: getParty(state.owner) };
       await ledger.create(Asset, withIssuer);
     };
     setNewAssetProps({...defaultNewAssetProps, open: true, onClose});
@@ -133,8 +134,8 @@ export default function Report() {
         <TableBody>
           {assets.contracts.map(a => (
             <TableRow key={a.contractId} className={classes.tableRow}>
-              <TableCell key={0} className={classes.tableCell}>{a.payload.issuer}</TableCell>
-              <TableCell key={1} className={classes.tableCell}>{a.payload.owner}</TableCell>
+              <TableCell key={0} className={classes.tableCell}>{getName(a.payload.issuer)}</TableCell>
+              <TableCell key={1} className={classes.tableCell}>{getName(a.payload.owner)}</TableCell>
               <TableCell key={2} className={classes.tableCell}>{a.payload.name}</TableCell>
               <TableCell key={3} className={classes.tableCell}>{a.payload.value}</TableCell>
               <TableCell key={4} className={classes.tableCell}>{a.payload.dateOfAppraisal}</TableCell>
