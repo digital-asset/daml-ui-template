@@ -1,4 +1,4 @@
-sdk-version: 1.15.0
+sdk-version: 1.17.1
 name: daml-ui-template
 source: daml
 parties:
