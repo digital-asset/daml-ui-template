@@ -54,20 +54,10 @@ jobs:
           set -euo pipefail
           yarn --version
           export PATH=$HOME/.daml/bin:$PATH
-          make build
+          daml build
+          daml codegen js -o ui/daml.js .daml/dist/*.dar
           cd ui
+          yarn install --force --frozen-lockfile
           yarn build
           #CI=yes yarn workspaces run test --ci --all
         displayName: build-and-test-ts
-
-      #- bash: |
-      #    set -euo pipefail
-      #    # FIXME: where should notifications go for this project?
-      #    MESSAGE=$(git log --pretty=format:%s -n1)
-      #    curl -XPOST \
-      #         -i \
-      #         -H 'Content-type: application/json' \
-      #         --data "{\"text\":\"<!here> *FAILED* $(Agent.JobName) ($(Build.SourceBranchName)): <https://dev.azure.com/digitalasset/create-daml-app/_build/results?buildId=$(Build.BuildId)|$MESSAGE>\n\"}" \
-      #         $(Slack.URL)
-      #  condition: and(false,failed(), in(variables['Build.SourceBranchName'], 'direct-messaging', 'master'))
-      #  displayName: tell-slack-if-failed
