@@ -1,16 +1,21 @@
-sdk-version: 1.15.0
+sdk-version: 2.2.0
 name: daml-ui-template
 source: daml
 parties:
   - Alice
   - Bob
 version: 0.0.1
-init-script: Main:setup
-start-navigator: false
-sandbox-options:
-  - --ledgerid=daml-ui-template
-  - -w
 dependencies:
   - daml-prim
   - daml-stdlib
   - daml-script
+init-script: Main:setup
+start-navigator: false
+script-options:
+  - --output-file=ui/src/parties.json
+json-api-options:
+  - --address=0.0.0.0
+codegen:
+  js:
+    output-directory: ui/daml.js
+    npm-scope: daml.js

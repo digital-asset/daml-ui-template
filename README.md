@@ -9,30 +9,28 @@ This repository contains a simple UI template for a DAML application. It provide
 * [Yarn](https://yarnpkg.com/lang/en/docs/install/)
 * [DAML SDK](https://docs.daml.com/getting-started/installation.html)
 
-## Building and running locally
+## Running the app
 
-1. Build the DAML models and the UI project
-```
-make build
-```
-
-2. Start the sandbox ledger
+1. Start the sandbox ledger
 ```
 daml start
 ```
 
-3. In a new shell, start the UI
+Wait until the ledger has started up.
+
+2. In a new shell, start the UI
 ```
 cd ui
+yarn install --force --frozen-lockfile
 yarn start
 ```
 
 This opens a browser page pointing to `http://localhost:3000/#/login`. Note that the development server serves content via http and should not be exposed as is to a public-facing network.
 
-Note that if you change your DAML models you need to run a full rebuild for the changes to propagate to your UI code:
-```
-make build
-```
+If you change the Daml code you need to rerun all of the steps above in order for the changes to propagate properly into the UI code.
+
+Note that in order to support login with party aliases (like "Alice") we output a `[(Text, Party)]` mapping from the init script. This output file (`ui/parties.json`) is used to map party aliases to party ids.
+For this to work the ledger has to have completed the init script before starting up the UI server. This is of course only a convenience practice and should not be used in production.
 
 ## Exploring the application
 
@@ -45,23 +43,3 @@ make build
 - Both choices will open a dialog to enter the required parameters. The dialog currently supports `text`, `number`, `date`, and `selection` input types.
 
 The `Report` page is meant as an example, which you can copy and modify to your needs.
-
-## Deploying to production
-
-Deploying `daml-ui-template` to the hosted DAML platform [project:DABL](http://projectdabl.com/) is straight forward:
-
-1. Build the deployment artifacts:
-
-```bash
-make deploy
-```
-
-2. Log into your DABL account and create a new project and ledger.
-
-3. Select the ledger, click on `Update .dar` in the DAML section of the app artifacts, and upload `deploy/daml-ui-template-0.0.1.dar`.
-
-4. Select `Upload .zip` in the UI Assets section, and upload `deploy/daml-ui-template.zip`.
-
-5. Publish the deployed UI artifact from the App UI section of the page.
-
-6. Follow the `View Site` link in the App UI section to open your fully deployed application.

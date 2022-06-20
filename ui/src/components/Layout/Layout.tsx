@@ -11,7 +11,7 @@ import useStyles from "./styles";
 const Layout = () => {
   const classes = useStyles();
   const user = useUserState();
-
+  console.log(user);
   if(!user.isAuthenticated){
     return null;
   } else {
